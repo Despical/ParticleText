@@ -1,0 +1,5 @@
+name: ParticleText
+author: Despical
+version: ${project.version}
+api-version: 1.13
+main: me.despical.particletext.Main

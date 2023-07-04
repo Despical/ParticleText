@@ -1,4 +1,4 @@
-package me.despical.particletext.renderer;
+package me.despical.particletext.particles;
 
 import me.despical.particletext.Main;
 import me.despical.particletext.util.ParticleUtils;
@@ -15,7 +15,7 @@ import java.awt.image.BufferedImage;
 /**
  * @author Despical
  * <p>
- * Created at 7.08.2022
+ * Created at 3.07.2023
  */
 public class ParticleRenderer {
 
@@ -23,28 +23,33 @@ public class ParticleRenderer {
 	private static final float degreesToRadians = 3.1415927f / 180;
 
 	private final Particle particle;
-	private final String text;
-	private final Font font;
 	private final BufferedImage image;
 	private final boolean invert;
 	private final int stepX = 1, stepY = 1;
-	private final float size = (float) 1 / 5;
+	private final float size;
 
+	private boolean enabled = true;
+	private Location location;
 	private BukkitTask renderTask;
 
-	public ParticleRenderer(Particle particle, String text, boolean invert) {
+	public ParticleRenderer(Location location, Particle particle, String text, float size, boolean invert) {
+		this.location = location;
 		this.particle = particle;
-		this.text = text;
 		this.invert = invert;
-		this.font = new Font("Tahoma", Font.PLAIN, 16);
-		this.image = ParticleUtils.stringToBufferedImage(font, text);
+		this.size = size;
+		this.image = ParticleUtils.stringToBufferedImage(new Font("Tahoma", Font.PLAIN, 16), text);
 	}
 
-	public void render(Location location) {
+	public void render() {
 		renderTask = new BukkitRunnable() {
 
 			@Override
 			public void run() {
+				if (!enabled) {
+					cancel();
+					return;
+				}
+
 				int color;
 
 				try {
@@ -73,6 +78,23 @@ public class ParticleRenderer {
 	}
 
 	public void stopRendering() {
-		if (renderTask != null) renderTask.cancel();
+		if (renderTask != null) {
+			renderTask.cancel();
+			renderTask = null;
+		}
+	}
+
+	public void updateLocation(Location location) {
+		this.location = location;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+
+		if (enabled) {
+			this.render();
+		} else {
+			this.stopRendering();
+		}
 	}
 }

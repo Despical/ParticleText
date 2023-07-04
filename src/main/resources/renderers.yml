@@ -1,0 +1,9 @@
+renderer-instances:
+  default:
+    id: default
+    text: Particle Text by Despical
+    size: 0.2
+    particle: FLAME
+    inverted: false
+    enabled: true
+    location: world, -862.439, 10.470, 411.533, -2.920, 12.973

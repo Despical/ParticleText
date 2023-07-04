@@ -10,30 +10,25 @@ import java.awt.image.BufferedImage;
 /**
  * @author Despical
  * <p>
- * Created at 7.08.2022
+ * Created at 3.07.2023
  */
 public class ParticleUtils {
 
 	public static BufferedImage stringToBufferedImage(Font font, String s) {
 		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
-		Graphics g = img.getGraphics();
-		g.setFont(font);
+		Graphics graphics = img.getGraphics();
+		graphics.setFont(font);
 
-		FontRenderContext frc = g.getFontMetrics().getFontRenderContext();
+		FontRenderContext frc = graphics.getFontMetrics().getFontRenderContext();
 		Rectangle2D rect = font.getStringBounds(s, frc);
-		g.dispose();
+		graphics.dispose();
 
 		img = new BufferedImage((int) Math.ceil(rect.getWidth()), (int) Math.ceil(rect.getHeight()), BufferedImage.TYPE_4BYTE_ABGR);
-		g = img.getGraphics();
-		g.setColor(Color.black);
-		g.setFont(font);
-
-		FontMetrics fm = g.getFontMetrics();
-		int x = 0;
-		int y = fm.getAscent();
-
-		g.drawString(s, x, y);
-		g.dispose();
+		graphics = img.getGraphics();
+		graphics.setColor(Color.black);
+		graphics.setFont(font);
+		graphics.drawString(s, 0, graphics.getFontMetrics().getAscent());
+		graphics.dispose();
 
 		return img;
 	}

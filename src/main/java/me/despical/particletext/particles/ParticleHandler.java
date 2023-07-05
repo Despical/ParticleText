@@ -5,7 +5,6 @@ import me.despical.commons.serializer.LocationSerializer;
 import me.despical.particletext.Main;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import javax.annotation.Nullable;
 import java.util.HashMap;
@@ -19,14 +18,13 @@ import java.util.Map;
 public class ParticleHandler {
 
 	private final Main plugin;
-	private final FileConfiguration config;
 	private final Map<String, ParticleRenderer> rendererMap;
 
 	public ParticleHandler(Main plugin) {
 		this.plugin = plugin;
-		this.config = ConfigUtils.getConfig(plugin, "renderers");
 		this.rendererMap = new HashMap<>();
 
+		var config =  ConfigUtils.getConfig(plugin, "renderers");
 		var section = config.getConfigurationSection("renderer-instances");
 
 		if (section == null) {
@@ -58,6 +56,7 @@ public class ParticleHandler {
 
 		this.rendererMap.put(id, renderer);
 
+		var config =  ConfigUtils.getConfig(plugin, "renderers");
 		config.set(path + "id", id);
 		config.set(path + "text", text);
 		config.set(path + "size", size);

@@ -3,10 +3,12 @@ package me.despical.particletext.particles;
 import me.despical.commons.configuration.ConfigUtils;
 import me.despical.commons.serializer.LocationSerializer;
 import me.despical.particletext.Main;
+import me.despical.particletext.utils.Utils;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 
 import javax.annotation.Nullable;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -43,8 +45,9 @@ public class ParticleHandler {
 			Location location = LocationSerializer.fromString(config.getString(path + "location"));
 			float size = (float) config.getDouble(path + "size", .2F);
 			boolean inverted = config.getBoolean(path + "inverted");
+			Font font = Utils.getFont(path + "font");
 
-			ParticleRenderer renderer = new ParticleRenderer(location, particle, text, size, inverted);
+			ParticleRenderer renderer = new ParticleRenderer(location, particle, text, size, inverted, font);
 			renderer.setEnabled(config.getBoolean(path + "enabled", true));
 			this.rendererMap.put(id, renderer);
 		}
@@ -52,7 +55,7 @@ public class ParticleHandler {
 
 	public ParticleRenderer createRenderer(Location location, Particle particle, String id, String text, float size, boolean inverted) {
 		ParticleRenderer renderer = new ParticleRenderer(location, particle, text, size, inverted);
-		 String path = "renderer-instances.%s.".formatted(id);
+		String path = "renderer-instances.%s.".formatted(id);
 
 		this.rendererMap.put(id, renderer);
 
@@ -63,6 +66,7 @@ public class ParticleHandler {
 		config.set(path + "particle", particle.name());
 		config.set(path + "inverted", inverted);
 		config.set(path + "enabled", true);
+		config.set(path + "font", "Tahoma:0:16");
 		config.set(path + "location", LocationSerializer.toString(location));
 
 		ConfigUtils.saveConfig(plugin, config, "renderers");

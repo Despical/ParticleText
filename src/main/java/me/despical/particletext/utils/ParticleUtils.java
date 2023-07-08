@@ -1,4 +1,4 @@
-package me.despical.particletext.util;
+package me.despical.particletext.utils;
 
 import org.bukkit.util.Vector;
 

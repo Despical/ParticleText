@@ -8,6 +8,7 @@ import me.despical.particletext.Main;
 import me.despical.particletext.particles.ParticleRenderer;
 import org.bukkit.Particle;
 
+import java.awt.*;
 import java.util.Arrays;
 import java.util.List;
 
@@ -215,5 +216,42 @@ public class ParticleCommands extends AbstractCommand {
 		renderer.setEnabled(enabled);
 
 		user.sendMessage("admin-commands." + (enabled ? "enabled-renderer" : "disabled-renderer"), id);
+	}
+
+	@Command(
+			name = "pt.font",
+			permission = "pt.font",
+			usage = "/pt font <id> <font name> <style> <size>",
+			desc = "Enable or disable target particle renderer.",
+			senderType = PLAYER
+	)
+	public void ptSetFontCommand(CommandArguments arguments) {
+		final var user = plugin.getUserManager().getUser(arguments.getSender());
+		final var id = arguments.getArgument(0);
+		final var particleRenderer = particleHandler.getRenderer(id);
+
+		if (particleRenderer == null) {
+			user.sendMessage("admin-commands.no-particle-renderer-found");
+			return;
+		}
+
+		if (arguments.getArgumentsLength() < 4) {
+			user.sendRawMessage("&cCorrect usage: /pt font <id> <font name> <style> <size>");
+			return;
+		}
+
+		try {
+			final var font = new Font(arguments.getArgument(1), arguments.getArgumentAsInt(2), arguments.getArgumentAsInt(3));
+			final var config = ConfigUtils.getConfig(plugin, "renderers");
+
+			config.set("renderer-instances.%s.font".formatted(id), "%s:%d:%d".formatted(font.getFontName(), font.getStyle(), font.getSize()));
+			ConfigUtils.saveConfig(plugin, config, "renderers");
+
+			particleRenderer.setFont(font);
+
+			user.sendMessage("admin-commands.font-changed");
+		} catch (Exception exception) {
+			user.sendRawMessage("&cThere isn't any font with given arguments!");
+		}
 	}
 }

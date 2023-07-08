@@ -1,7 +1,7 @@
 package me.despical.particletext.particles;
 
 import me.despical.particletext.Main;
-import me.despical.particletext.util.ParticleUtils;
+import me.despical.particletext.utils.ParticleUtils;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -23,7 +23,7 @@ public class ParticleRenderer {
 	private static final float degreesToRadians = 3.1415927f / 180;
 
 	private final Particle particle;
-	private final BufferedImage image;
+	private final String text;
 	private final boolean invert;
 	private final int stepX = 1, stepY = 1;
 	private final float size;
@@ -31,13 +31,19 @@ public class ParticleRenderer {
 	private boolean enabled = true;
 	private Location location;
 	private BukkitTask renderTask;
+	private BufferedImage image;
 
 	public ParticleRenderer(Location location, Particle particle, String text, float size, boolean invert) {
+		this(location, particle, text, size, invert, new Font("Tahoma", Font.PLAIN, 16));
+	}
+
+	public ParticleRenderer(Location location, Particle particle, String text, float size, boolean invert, Font font) {
 		this.location = location;
 		this.particle = particle;
+		this.text = text;
 		this.invert = invert;
 		this.size = size;
-		this.image = ParticleUtils.stringToBufferedImage(new Font("Tahoma", Font.PLAIN, 16), text);
+		this.image = ParticleUtils.stringToBufferedImage(font, text);
 	}
 
 	public void render() {
@@ -96,5 +102,9 @@ public class ParticleRenderer {
 		} else {
 			this.stopRendering();
 		}
+	}
+
+	public void setFont(Font font) {
+		this.image = ParticleUtils.stringToBufferedImage(font, text);
 	}
 }

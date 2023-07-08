@@ -12,3 +12,4 @@ admin-commands:
   moved-here: "&aParticle renderer called %s moved to your location."
   enabled-renderer: "&aParticle renderer called %s successfully enabled."
   disabled-renderer: "&aParticle renderer called %s successfully disabled."
+  font-changed: "&aFont has been changed successfully."

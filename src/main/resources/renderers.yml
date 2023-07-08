@@ -6,4 +6,5 @@ renderer-instances:
     particle: FLAME
     inverted: false
     enabled: true
+    font: "Tahoma:0:16"
     location: world, -862.439, 10.470, 411.533, -2.920, 12.973

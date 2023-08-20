@@ -1,6 +1,7 @@
 package me.despical.particletext;
 
 import me.despical.commandframework.CommandFramework;
+import me.despical.commons.util.UpdateChecker;
 import me.despical.particletext.commands.AbstractCommand;
 import me.despical.particletext.events.JoinQuitEvents;
 import me.despical.particletext.handlers.ChatManager;
@@ -10,8 +11,8 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.awt.*;
 import java.io.File;
+import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
@@ -31,8 +32,9 @@ public class Main extends JavaPlugin {
 		if (!supportsParticle()) return;
 
 		this.initializeClasses();
+		this.checkUpdate();
 
-		getLogger().info("Initialization finished. Join our Discord server: https://discord.gg/rVkaGmyszE");
+		getLogger().info("Initialization finished. Consider donating: https://buymeacoffee.com/despical");
 	}
 
 	@Override
@@ -60,6 +62,8 @@ public class Main extends JavaPlugin {
 	}
 
 	private void setupConfigurationFiles() {
+		saveDefaultConfig();
+
 		Stream.of("messages", "renderers").filter(fileName -> !new File(getDataFolder(),fileName + ".yml").exists()).forEach(fileName -> this.saveResource(fileName + ".yml", false));
 	}
 
@@ -88,5 +92,19 @@ public class Main extends JavaPlugin {
 			setEnabled(false);
 			return false;
 		}
+	}
+
+	private void checkUpdate() {
+		if (!getConfig().getBoolean("Updates-Enabled", true)) return;
+
+		UpdateChecker.init(this, 110996).requestUpdateCheck().whenComplete((result, exception) -> {
+			if (result.requiresUpdate()) {
+				final Logger logger = getLogger();
+
+				logger.info("Found a new version available: v" + result.getNewestVersion());
+				logger.info("Download it on SpigotMC:");
+				logger.info("https://www.spigotmc.org/resources/110996/");
+			}
+		});
 	}
 }

@@ -1,0 +1,2 @@
+# Should we send a log message if there is new version available?
+Updates-Enabled: true

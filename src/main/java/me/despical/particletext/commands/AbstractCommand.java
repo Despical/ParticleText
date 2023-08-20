@@ -5,7 +5,6 @@ import me.despical.particletext.Main;
 import me.despical.particletext.handlers.ChatManager;
 import me.despical.particletext.particles.ParticleHandler;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
@@ -22,9 +21,9 @@ public abstract class AbstractCommand {
     }
 
     public static void registerCommands(final Main plugin) {
-        final Class<?>[] commandClasses = new Class[] {ParticleCommands.class, TabCompleter.class};
+        final var commandClasses = new Class<?>[] {ParticleCommands.class, TabCompleter.class};
 
-        for (Class<?> clazz : commandClasses) {
+        for (final var clazz : commandClasses) {
             try {
                 clazz.getConstructor(Main.class).newInstance(plugin);
             } catch (Exception exception) {
@@ -38,7 +37,7 @@ public abstract class AbstractCommand {
             if (arguments.isArgumentsEmpty()) return false;
 
             String label = arguments.getLabel(), arg = arguments.getArgument(0);
-            List<StringMatcher.Match> matches = StringMatcher.match(arg, plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList()));
+            final var matches = StringMatcher.match(arg, plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList()));
 
             if (!matches.isEmpty()) {
                 arguments.sendMessage(didYouMeanMsg.replace("%command%", label + " " + matches.get(0).getMatch()));

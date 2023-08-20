@@ -10,7 +10,6 @@ import org.bukkit.Particle;
 
 import java.awt.*;
 import java.util.Arrays;
-import java.util.List;
 
 import static me.despical.commandframework.Command.SenderType.PLAYER;
 
@@ -57,14 +56,14 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final String id = arguments.getArgument(0);
+		final var id = arguments.getArgument(0);
 
 		if (particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.duplicate-renderer");
 			return;
 		}
 
-		final String particleName = arguments.getArgument(1);
+		final var particleName = arguments.getArgument(1);
 		final Particle particle;
 
 		try {
@@ -82,9 +81,9 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final List<String> argumentList = Arrays.asList(arguments.getArguments());
-		final String text = String.join(" ", argumentList.subList(4, argumentList.size()));
-		final ParticleRenderer renderer = particleHandler.createRenderer(user.getLocation(), particle, id, text, size, invert);
+		final var argumentList = Arrays.asList(arguments.getArguments());
+		final var text = String.join(" ", argumentList.subList(4, argumentList.size()));
+		final var renderer = particleHandler.createRenderer(user.getLocation(), particle, id, text, size, invert);
 		renderer.render();
 
 		user.sendMessage("admin-commands.created-renderer", id);
@@ -100,7 +99,7 @@ public class ParticleCommands extends AbstractCommand {
 	)
 	public void ptDeleteCommand(CommandArguments arguments) {
 		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final String id = arguments.getArgument(0);
+		final var id = arguments.getArgument(0);
 
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
@@ -126,7 +125,7 @@ public class ParticleCommands extends AbstractCommand {
 	)
 	public void ptListCommand(CommandArguments arguments) {
 		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final String list = String.join(", ", plugin.getParticleHandler().getRenderers().keySet());
+		final var list = String.join(", ", plugin.getParticleHandler().getRenderers().keySet());
 
 		if (list.isEmpty()) {
 			user.sendMessage("admin-commands.empty-list");
@@ -145,7 +144,7 @@ public class ParticleCommands extends AbstractCommand {
 	)
 	public void ptTeleportCommand(CommandArguments arguments) {
 		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final String id = arguments.getArgument(0);
+		final var id = arguments.getArgument(0);
 
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
@@ -167,7 +166,7 @@ public class ParticleCommands extends AbstractCommand {
 	)
 	public void ptTpHereCommand(CommandArguments arguments) {
 		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final String id = arguments.getArgument(0);
+		final var id = arguments.getArgument(0);
 
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
@@ -178,7 +177,7 @@ public class ParticleCommands extends AbstractCommand {
 		config.set("renderer-instances.%s.location".formatted(id), LocationSerializer.toString(user.getLocation()));
 		ConfigUtils.saveConfig(plugin, config, "renderers");
 
-		ParticleRenderer renderer = particleHandler.getRenderer(id);
+		var renderer = particleHandler.getRenderer(id);
 
 		if (renderer == null) return;
 
@@ -196,14 +195,14 @@ public class ParticleCommands extends AbstractCommand {
 	)
 	public void ptEnabledCommand(CommandArguments arguments) {
 		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final String id = arguments.getArgument(0);
+		final var id = arguments.getArgument(0);
 
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
 			return;
 		}
 
-		final boolean enabled = arguments.getArgumentAsBoolean(1);
+		final var enabled = arguments.getArgumentAsBoolean(1);
 		final var config = ConfigUtils.getConfig(plugin, "renderers");
 
 		config.set("renderer-instances.%s.enabled".formatted(id), enabled);

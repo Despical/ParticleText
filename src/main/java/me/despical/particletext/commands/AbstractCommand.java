@@ -34,15 +34,18 @@ public abstract class AbstractCommand {
 
         final String didYouMeanMsg = plugin.getChatManager().message("admin-commands.did-you-mean");
 
-        plugin.getCommandFramework().setAnyMatch(arguments -> {
-            if (arguments.isArgumentsEmpty()) return;
+        plugin.getCommandFramework().setMatchFunction(arguments -> {
+            if (arguments.isArgumentsEmpty()) return false;
 
             String label = arguments.getLabel(), arg = arguments.getArgument(0);
             List<StringMatcher.Match> matches = StringMatcher.match(arg, plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList()));
 
             if (!matches.isEmpty()) {
                 arguments.sendMessage(didYouMeanMsg.replace("%command%", label + " " + matches.get(0).getMatch()));
+                return true;
             }
+
+            return false;
         });
     }
 }

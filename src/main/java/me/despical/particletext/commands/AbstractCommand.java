@@ -21,25 +21,17 @@ public abstract class AbstractCommand {
     }
 
     public static void registerCommands(final Main plugin) {
-        final var commandClasses = new Class<?>[] {ParticleCommands.class, TabCompleter.class};
-
-        for (final var clazz : commandClasses) {
-            try {
-                clazz.getConstructor(Main.class).newInstance(plugin);
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-        }
-
-        final String didYouMeanMsg = plugin.getChatManager().message("admin-commands.did-you-mean");
+        new ParticleCommands(plugin);
 
         plugin.getCommandFramework().setMatchFunction(arguments -> {
             if (arguments.isArgumentsEmpty()) return false;
 
-            String label = arguments.getLabel(), arg = arguments.getArgument(0);
+            final String label = arguments.getLabel(), arg = arguments.getArgument(0);
             final var matches = StringMatcher.match(arg, plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList()));
 
             if (!matches.isEmpty()) {
+                final var didYouMeanMsg = plugin.getChatManager().message("admin-commands.did-you-mean");
+
                 arguments.sendMessage(didYouMeanMsg.replace("%command%", label + " " + matches.get(0).getMatch()));
                 return true;
             }

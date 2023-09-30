@@ -3,7 +3,7 @@ package me.despical.particletext.particles;
 import me.despical.commons.configuration.ConfigUtils;
 import me.despical.commons.serializer.LocationSerializer;
 import me.despical.particletext.Main;
-import me.despical.particletext.utils.Utils;
+import me.despical.particletext.utils.ParticleUtils;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 
@@ -45,7 +45,7 @@ public class ParticleHandler {
 			Location location = LocationSerializer.fromString(config.getString(path + "location"));
 			float size = (float) config.getDouble(path + "size", .2F);
 			boolean inverted = config.getBoolean(path + "inverted");
-			Font font = Utils.getFont(path + "font");
+			Font font = ParticleUtils.getFont(path + "font");
 
 			ParticleRenderer renderer = new ParticleRenderer(location, particle, text, size, inverted, font);
 			renderer.setEnabled(config.getBoolean(path + "enabled", true));

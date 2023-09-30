@@ -2,14 +2,20 @@ package me.despical.particletext.commands;
 
 import me.despical.commandframework.Command;
 import me.despical.commandframework.CommandArguments;
+import me.despical.commandframework.Completer;
 import me.despical.commons.configuration.ConfigUtils;
 import me.despical.commons.serializer.LocationSerializer;
 import me.despical.particletext.Main;
 import me.despical.particletext.particles.ParticleRenderer;
 import org.bukkit.Particle;
+import org.bukkit.util.StringUtil;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static me.despical.commandframework.Command.SenderType.PLAYER;
 
@@ -32,7 +38,7 @@ public class ParticleCommands extends AbstractCommand {
 		final var user = plugin.getUserManager().getUser(arguments.getSender());
 
 		if (arguments.isArgumentsEmpty()) {
-			user.sendMessage("&3This server is running &bParticle Text " + plugin.getDescription().getVersion() + " &3by &bDespical.");
+			user.sendMessage("&3This server is running &bParticle Text " + plugin.getDescription().getVersion() + " &3by &bDespical&3!");
 
 			if (user.hasPermission("pt.admin")) {
 				user.sendRawMessage("&3Commands: &b/" + arguments.getLabel() + " help");
@@ -154,7 +160,7 @@ public class ParticleCommands extends AbstractCommand {
 		final var config = ConfigUtils.getConfig(plugin, "renderers");
 		final var location = LocationSerializer.fromString(config.getString("renderer-instances.%s.location".formatted(id)));
 
-		user.getPlayer().teleport(location);
+		user.player().teleport(location);
 	}
 
 	@Command(
@@ -252,5 +258,43 @@ public class ParticleCommands extends AbstractCommand {
 		} catch (Exception exception) {
 			user.sendRawMessage("&cThere isn't any font with given arguments!");
 		}
+	}
+
+	@Completer(
+			name = "pt"
+	)
+	public java.util.List<String> ptTabCompleter(CommandArguments arguments) {
+		final java.util.List<String> completions = new ArrayList<>(), commands = plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(arguments.getLabel() + '.', "")).collect(Collectors.toList());
+		final String args[] = arguments.getArguments(), arg = args[0];
+
+		commands.remove("pt");
+
+		if (args.length == 1) {
+			StringUtil.copyPartialMatches(arg, arguments.hasPermission("pt.admin") || arguments.getSender().isOp() ? commands : java.util.List.of("create", "delete", "tphere", "teleport", "enabled"), completions);
+		}
+
+		if (args.length == 2) {
+			if (List.of("create", "list").contains(arg)) return completions;
+
+			final var idList = new ArrayList<>(particleHandler.getRenderers().keySet().stream().toList());
+
+			StringUtil.copyPartialMatches(args[1], idList, completions);
+			idList.sort(null);
+			return idList;
+		}
+
+		if (args.length == 3 && arg.equalsIgnoreCase("create")) {
+			final var particleList = Stream.of(Particle.values()).map(Particle::name).sorted().toList();
+
+			StringUtil.copyPartialMatches(args[2], particleList, completions);
+			completions.sort(null);
+			return completions;
+		}
+
+		if (args.length == 3 && arg.equalsIgnoreCase("enabled")) return java.util.List.of("true", "false");
+		if (args.length == 4 && arg.equalsIgnoreCase("create")) return List.of("true", "false");
+
+		completions.sort(null);
+		return completions;
 	}
 }

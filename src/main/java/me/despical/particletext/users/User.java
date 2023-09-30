@@ -12,15 +12,9 @@ import java.util.UUID;
  * <p>
  * Created at 3.07.2023
  */
-public class User {
+public record User(Player player) {
 
     private final static Main plugin = JavaPlugin.getPlugin(Main.class);
-
-    private final Player player;
-
-    public User(Player player) {
-        this.player = player;
-    }
 
     public void sendMessage(final String path) {
         this.sendRawMessage(plugin.getChatManager().message(path));
@@ -40,14 +34,6 @@ public class User {
 
     public Location getLocation() {
         return this.player.getLocation();
-    }
-
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    public String getName() {
-        return this.player.getName();
     }
 
     public UUID getUniqueId() {

@@ -57,7 +57,6 @@ public class Main extends JavaPlugin {
 		AbstractCommand.registerCommands(this);
 
 		new JoinQuitEvents(this);
-
 		new Metrics(this, 18978);
 	}
 

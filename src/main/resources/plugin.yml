@@ -1,5 +1,18 @@
 name: ParticleText
 author: Despical
 version: ${project.version}
-api-version: 1.13
 main: me.despical.particletext.Main
+api-version: 1.13
+description: Show any text using Minecraft particles
+
+permissions:
+  pt.*:
+    default: op
+    children:
+      pt.create: true
+      pt.delete: true
+      pt.list: true
+      pt.tp: true
+      pt.tphere: true
+      pt.enabled: true
+      pt.font: true

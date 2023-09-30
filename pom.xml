@@ -6,11 +6,12 @@
 
     <groupId>me.despical</groupId>
     <artifactId>particle-text</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
-    <url>https://www.spigotmc.org/resources/110996/</url>
 
     <name>Particle Text</name>
+    <inceptionYear>2023</inceptionYear>
+    <url>https://www.spigotmc.org/resources/110996/</url>
     <description>Show any text using Minecraft particles.</description>
 
     <properties>

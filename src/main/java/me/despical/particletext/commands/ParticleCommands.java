@@ -32,7 +32,8 @@ public class ParticleCommands extends AbstractCommand {
 
 	@Command(
 			name = "pt",
-			desc = "Main command of Pixel Painter."
+			desc = "Main command of Pixel Painter.",
+			senderType = PLAYER
 	)
 	public void ptCommand(CommandArguments arguments) {
 		final var user = plugin.getUserManager().getUser(arguments.getSender());

@@ -7,8 +7,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
 /**
@@ -18,15 +16,18 @@ import java.awt.image.BufferedImage;
  */
 public class ParticleUtils {
 
-	public static final Main plugin = JavaPlugin.getPlugin(Main.class);
+	private ParticleUtils() {
+	}
+
+	private static final Main plugin = JavaPlugin.getPlugin(Main.class);
 
 	public static BufferedImage stringToBufferedImage(Font font, String s) {
-		BufferedImage img = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
-		Graphics graphics = img.getGraphics();
+		var img = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);
+		var graphics = img.getGraphics();
 		graphics.setFont(font);
 
-		FontRenderContext frc = graphics.getFontMetrics().getFontRenderContext();
-		Rectangle2D rect = font.getStringBounds(s, frc);
+		var frc = graphics.getFontMetrics().getFontRenderContext();
+		var rect = font.getStringBounds(s, frc);
 		graphics.dispose();
 
 		img = new BufferedImage((int) Math.ceil(rect.getWidth()), (int) Math.ceil(rect.getHeight()), BufferedImage.TYPE_4BYTE_ABGR);
@@ -35,7 +36,6 @@ public class ParticleUtils {
 		graphics.setFont(font);
 		graphics.drawString(s, 0, graphics.getFontMetrics().getAscent());
 		graphics.dispose();
-
 		return img;
 	}
 
@@ -50,9 +50,10 @@ public class ParticleUtils {
 
 	public static Font getFont(String path) {
 		final var config = ConfigUtils.getConfig(plugin, "renderers");
-		final String[] fontAttributes = config.getString(path).split(":");
+		final var fontAttributes = config.getString(path).split(":");
 
-		if (fontAttributes.length != 3) return new Font("Tahoma", Font.PLAIN, 16);
+		if (fontAttributes.length != 3)
+			return new Font("Tahoma", Font.PLAIN, 16);
 
 		return new Font(fontAttributes[0], NumberUtils.getInt(fontAttributes[1], 0), NumberUtils.getInt(fontAttributes[2]));
 	}

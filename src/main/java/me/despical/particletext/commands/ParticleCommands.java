@@ -260,17 +260,29 @@ public class ParticleCommands extends AbstractCommand {
 		}
 	}
 
-	@Completer(
-			name = "pt"
+	@Command(
+			name = "pt.reload",
+			permission = "pt.reload"
 	)
-	public java.util.List<String> ptTabCompleter(CommandArguments arguments) {
-		final java.util.List<String> completions = new ArrayList<>(), commands = plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(arguments.getLabel() + '.', "")).collect(Collectors.toList());
+	public void reloadCommand(CommandArguments arguments) {
+		plugin.getChatManager().reload();
+		plugin.getParticleHandler().reload();
+
+		arguments.sendMessage(chatManager.message("admin-commands.system-reloaded"));
+	}
+
+	@Completer(
+			name = "pt",
+			permission = "pt.completer"
+	)
+	public List<String> ptTabCompleter(CommandArguments arguments) {
+		final List<String> completions = new ArrayList<>(), commands = plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(arguments.getLabel() + '.', "")).collect(Collectors.toList());
 		final String args[] = arguments.getArguments(), arg = args[0];
 
 		commands.remove("pt");
 
 		if (args.length == 1) {
-			StringUtil.copyPartialMatches(arg, arguments.hasPermission("pt.admin") || arguments.getSender().isOp() ? commands : java.util.List.of("create", "delete", "tphere", "teleport", "enabled"), completions);
+			StringUtil.copyPartialMatches(arg, arguments.hasPermission("pt.admin") || arguments.getSender().isOp() ? commands : List.of("create", "delete", "tphere", "teleport", "enabled"), completions);
 		}
 
 		if (args.length == 2) {
@@ -291,7 +303,7 @@ public class ParticleCommands extends AbstractCommand {
 			return completions;
 		}
 
-		if (args.length == 3 && arg.equalsIgnoreCase("enabled")) return java.util.List.of("true", "false");
+		if (args.length == 3 && arg.equalsIgnoreCase("enabled")) return List.of("true", "false");
 		if (args.length == 4 && arg.equalsIgnoreCase("create")) return List.of("true", "false");
 
 		completions.sort(null);

@@ -16,3 +16,5 @@ permissions:
       pt.tphere: true
       pt.enabled: true
       pt.font: true
+      pt.reload: true
+      pt.completer: true

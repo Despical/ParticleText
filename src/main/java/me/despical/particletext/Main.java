@@ -12,7 +12,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
-import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 /**
@@ -42,7 +41,8 @@ public class Main extends JavaPlugin {
 		for (var entry : particleHandler.getRenderers().entrySet()) {
 			var renderer = entry.getValue();
 
-			if (renderer != null) renderer.stopRendering();
+			if (renderer != null)
+				renderer.stopRendering();
 		}
 	}
 
@@ -98,7 +98,7 @@ public class Main extends JavaPlugin {
 
 		UpdateChecker.init(this, 110996).requestUpdateCheck().whenComplete((result, exception) -> {
 			if (result.requiresUpdate()) {
-				final Logger logger = getLogger();
+				final var logger = getLogger();
 
 				logger.info("Found a new version available: v" + result.getNewestVersion());
 				logger.info("Download it on SpigotMC:");

@@ -21,8 +21,6 @@ public abstract class AbstractCommand {
     }
 
     public static void registerCommands(final Main plugin) {
-        new ParticleCommands(plugin);
-
         plugin.getCommandFramework().setMatchFunction(arguments -> {
             if (arguments.isArgumentsEmpty()) return false;
 
@@ -38,5 +36,7 @@ public abstract class AbstractCommand {
 
             return false;
         });
+
+        new ParticleCommands(plugin);
     }
 }

@@ -7,9 +7,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class ChatManager {
 
-    private final FileConfiguration config;
+    private FileConfiguration config;
+
+    private final Main plugin;
 
     public ChatManager(Main plugin) {
+        this.plugin = plugin;
         this.config = ConfigUtils.getConfig(plugin, "messages");
     }
 
@@ -19,5 +22,9 @@ public class ChatManager {
 
     public String rawMessage(final String message) {
         return Strings.format(message);
+    }
+
+    public void reload() {
+        this.config = ConfigUtils.getConfig(plugin, "messages");
     }
 }

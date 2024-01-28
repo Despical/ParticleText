@@ -25,7 +25,10 @@ public class ParticleHandler {
 	public ParticleHandler(Main plugin) {
 		this.plugin = plugin;
 		this.rendererMap = new HashMap<>();
+		this.loadRenderers();
+	}
 
+	private void loadRenderers() {
 		var config =  ConfigUtils.getConfig(plugin, "renderers");
 		var section = config.getConfigurationSection("renderer-instances");
 
@@ -94,5 +97,10 @@ public class ParticleHandler {
 
 	public Map<String, ParticleRenderer> getRenderers() {
 		return Map.copyOf(this.rendererMap);
+	}
+
+	public void reload() {
+		this.rendererMap.clear();
+		this.loadRenderers();
 	}
 }

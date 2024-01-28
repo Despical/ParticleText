@@ -32,19 +32,10 @@ public class ParticleCommands extends AbstractCommand {
 
 	@Command(
 			name = "pt",
-			desc = "Main command of Pixel Painter.",
-			senderType = PLAYER
+			desc = "Main command of Pixel Painter."
 	)
 	public void ptCommand(CommandArguments arguments) {
-		final var user = plugin.getUserManager().getUser(arguments.getSender());
-
-		if (arguments.isArgumentsEmpty()) {
-			user.sendMessage("&3This server is running &bParticle Text " + plugin.getDescription().getVersion() + " &3by &bDespical&3!");
-
-			if (user.hasPermission("pt.admin")) {
-				user.sendRawMessage("&3Commands: &b/" + arguments.getLabel() + " help");
-			}
-		}
+		arguments.sendMessage(chatManager.rawMessage("&3This server is running &bParticle Text " + plugin.getDescription().getVersion() + " &3by &bDespical&3!"));
 	}
 
 	@Command(

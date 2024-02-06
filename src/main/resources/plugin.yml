@@ -17,4 +17,4 @@ permissions:
       pt.enabled: true
       pt.font: true
       pt.reload: true
-      pt.completer: true
+      pt.help: true

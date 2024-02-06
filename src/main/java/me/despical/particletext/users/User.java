@@ -40,10 +40,6 @@ public record User(Player player) {
         return this.player.getUniqueId();
     }
 
-    public boolean hasPermission(String permission) {
-        return this.player.hasPermission(permission);
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof User other)) return false;

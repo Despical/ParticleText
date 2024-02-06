@@ -1,11 +1,8 @@
 package me.despical.particletext.commands;
 
-import me.despical.commons.string.StringMatcher;
 import me.despical.particletext.Main;
 import me.despical.particletext.handlers.ChatManager;
 import me.despical.particletext.particles.ParticleHandler;
-
-import java.util.stream.Collectors;
 
 public abstract class AbstractCommand {
 
@@ -21,22 +18,6 @@ public abstract class AbstractCommand {
     }
 
     public static void registerCommands(final Main plugin) {
-        plugin.getCommandFramework().setMatchFunction(arguments -> {
-            if (arguments.isArgumentsEmpty()) return false;
-
-            final String label = arguments.getLabel(), arg = arguments.getArgument(0);
-            final var matches = StringMatcher.match(arg, plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList()));
-
-            if (!matches.isEmpty()) {
-                final var didYouMeanMsg = plugin.getChatManager().message("admin-commands.did-you-mean");
-
-                arguments.sendMessage(didYouMeanMsg.replace("%command%", label + " " + matches.get(0).getMatch()));
-                return true;
-            }
-
-            return false;
-        });
-
         new ParticleCommands(plugin);
     }
 }

@@ -28,7 +28,8 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		if (!supportsParticle()) return;
+		if (!supportsParticle())
+			return;
 
 		this.initializeClasses();
 		this.checkUpdate();

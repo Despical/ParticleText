@@ -4,15 +4,22 @@ import me.despical.commandframework.Command;
 import me.despical.commandframework.CommandArguments;
 import me.despical.commandframework.Completer;
 import me.despical.commons.configuration.ConfigUtils;
+import me.despical.commons.miscellaneous.MiscUtils;
 import me.despical.commons.serializer.LocationSerializer;
+import me.despical.commons.string.StringMatcher;
 import me.despical.particletext.Main;
 import me.despical.particletext.particles.ParticleRenderer;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Particle;
+import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -28,6 +35,22 @@ public class ParticleCommands extends AbstractCommand {
 
 	public ParticleCommands(Main plugin) {
 		super(plugin);
+
+		plugin.getCommandFramework().setMatchFunction(arguments -> {
+			if (arguments.isArgumentsEmpty()) return false;
+
+			final String label = arguments.getLabel(), arg = arguments.getArgument(0);
+			final var matches = StringMatcher.match(arg, plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList()));
+
+			if (!matches.isEmpty()) {
+				final var didYouMeanMsg = plugin.getChatManager().message("admin-commands.did-you-mean");
+
+				arguments.sendMessage(didYouMeanMsg.replace("%command%", label + " " + matches.get(0).getMatch()));
+				return true;
+			}
+
+			return false;
+		});
 	}
 
 	@Command(
@@ -36,6 +59,10 @@ public class ParticleCommands extends AbstractCommand {
 	)
 	public void ptCommand(CommandArguments arguments) {
 		arguments.sendMessage(chatManager.rawMessage("&3This server is running &bParticle Text " + plugin.getDescription().getVersion() + " &3by &bDespical&3!"));
+
+		if (arguments.hasPermission("pt.help")) {
+			arguments.sendMessage(chatManager.rawMessage("&3Commands: &b/" + arguments.getLabel() + " help"));
+		}
 	}
 
 	@Command(
@@ -43,11 +70,12 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.create",
 			usage = "/pt create <id> <particle type> <invert> <size> <text to show>",
 			desc = "Shows a text message with specified particle effect.",
+			allowInfiniteArgs = true,
 			senderType = PLAYER
 	)
 	public void ptCreateTextCommand(CommandArguments arguments) {
 		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final int length = arguments.getArgumentsLength();
+		final int length = arguments.getLength();
 
 		if (length < 5) {
 			user.sendMessage("admin-commands.correct-usage");
@@ -232,7 +260,7 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		if (arguments.getArgumentsLength() < 4) {
+		if (arguments.getLength() < 4) {
 			user.sendRawMessage("&cCorrect usage: /pt font <id> <font name> <style> <size>");
 			return;
 		}
@@ -254,7 +282,10 @@ public class ParticleCommands extends AbstractCommand {
 
 	@Command(
 			name = "pt.reload",
-			permission = "pt.reload"
+			usage = "/pt reload",
+			desc = "Reloads particle renderers and system files.",
+			permission = "pt.reload",
+			allowInfiniteArgs = true
 	)
 	public void reloadCommand(CommandArguments arguments) {
 		plugin.getChatManager().reload();
@@ -263,9 +294,59 @@ public class ParticleCommands extends AbstractCommand {
 		arguments.sendMessage(chatManager.message("admin-commands.system-reloaded"));
 	}
 
+	@SuppressWarnings("deprecation")
+	@Command(
+			name = "pt.help",
+			permission = "pt.help"
+	)
+	public void mmHelpCommand(CommandArguments arguments) {
+		final var isPlayer = arguments.isSenderPlayer();
+		final var sender = arguments.getSender();
+		final var message = chatManager.rawMessage("&3&l---- Particle Text Admin Commands ----");
+
+		arguments.sendMessage("");
+		MiscUtils.sendCenteredMessage(sender, message);
+		arguments.sendMessage("");
+
+		for (final var command : plugin.getCommandFramework().getCommands().stream().sorted(Collections
+				.reverseOrder(Comparator.comparingInt(cmd -> cmd.usage().length()))).toList()) {
+			String usage = command.usage(), desc = command.desc();
+
+			if (usage.isEmpty() || usage.contains("help")) continue;
+
+			if (isPlayer) {
+				((Player) sender).spigot().sendMessage(new ComponentBuilder()
+						.color(ChatColor.DARK_GRAY)
+						.append(" • ")
+						.append(usage)
+						.color(ChatColor.AQUA)
+						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, usage))
+						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(desc)))
+						.create());
+			} else {
+				sender.sendMessage(chatManager.rawMessage(" &8• &b" + usage + " &3- &b" + desc));
+			}
+		}
+
+		if (isPlayer) {
+			final var player = arguments.getSender();
+			player.sendMessage("");
+			player.spigot().sendMessage(new ComponentBuilder("TIP:").color(ChatColor.YELLOW).bold(true)
+					.append(" Try to ", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
+					.append("hover").color(ChatColor.WHITE).underlined(true)
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.LIGHT_PURPLE + "Hover on the commands to get info about them.")))
+					.append(" or ", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
+					.append("click").color(ChatColor.WHITE).underlined(true)
+					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.LIGHT_PURPLE + "Click on the commands to insert them in the chat.")))
+					.append(" on the commands!", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
+					.create());
+		}
+	}
+
+
 	@Completer(
 			name = "pt",
-			permission = "pt.completer"
+			permission = "pt.admin"
 	)
 	public List<String> ptTabCompleter(CommandArguments arguments) {
 		final List<String> completions = new ArrayList<>(), commands = plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(arguments.getLabel() + '.', "")).collect(Collectors.toList());
@@ -274,7 +355,7 @@ public class ParticleCommands extends AbstractCommand {
 		commands.remove("pt");
 
 		if (args.length == 1) {
-			StringUtil.copyPartialMatches(arg, arguments.hasPermission("pt.admin") || arguments.getSender().isOp() ? commands : List.of("create", "delete", "tphere", "teleport", "enabled"), completions);
+			StringUtil.copyPartialMatches(arg, commands, completions);
 		}
 
 		if (args.length == 2) {

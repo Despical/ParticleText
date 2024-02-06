@@ -3,6 +3,7 @@ package me.despical.particletext.commands;
 import me.despical.commandframework.Command;
 import me.despical.commandframework.CommandArguments;
 import me.despical.commandframework.Completer;
+import me.despical.commandframework.Confirmation;
 import me.despical.commons.configuration.ConfigUtils;
 import me.despical.commons.miscellaneous.MiscUtils;
 import me.despical.commons.serializer.LocationSerializer;
@@ -122,6 +123,11 @@ public class ParticleCommands extends AbstractCommand {
 			desc = "Delete the target particle renderer and stop rendering.",
 			min = 1,
 			senderType = PLAYER
+	)
+	@Confirmation(
+			message = "§cAre you sure you want to do this action? " +
+					"Type the command again §6within 10 seconds §cto confirm!",
+			expireAfter = 10
 	)
 	public void ptDeleteCommand(CommandArguments arguments) {
 		final var user = plugin.getUserManager().getUser(arguments.getSender());

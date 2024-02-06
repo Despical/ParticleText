@@ -14,3 +14,4 @@ admin-commands:
   disabled-renderer: "&aParticle renderer called %s successfully disabled."
   font-changed: "&aFont has been changed successfully."
   system-reloaded: "&aSystem files successfully reloaded."
+  set-size: "&aRenderer size of %s is set to %.2f."

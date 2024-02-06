@@ -10,6 +10,7 @@ import me.despical.commons.serializer.LocationSerializer;
 import me.despical.commons.string.StringMatcher;
 import me.despical.particletext.Main;
 import me.despical.particletext.particles.ParticleRenderer;
+import me.despical.particletext.users.User;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -37,6 +38,8 @@ public class ParticleCommands extends AbstractCommand {
 	public ParticleCommands(Main plugin) {
 		super(plugin);
 
+		plugin.getCommandFramework().addCustomParameter(User.class, args -> plugin.getUserManager().getUser(args.getSender()));
+		plugin.getCommandFramework().addCustomParameter(String.class, args -> args.getArgument(0));
 		plugin.getCommandFramework().setMatchFunction(arguments -> {
 			if (arguments.isArgumentsEmpty()) return false;
 
@@ -74,16 +77,13 @@ public class ParticleCommands extends AbstractCommand {
 			allowInfiniteArgs = true,
 			senderType = PLAYER
 	)
-	public void ptCreateTextCommand(CommandArguments arguments) {
-		final var user = plugin.getUserManager().getUser(arguments.getSender());
+	public void ptCreateCommand(CommandArguments arguments, User user, String id) {
 		final int length = arguments.getLength();
 
 		if (length < 5) {
 			user.sendMessage("admin-commands.correct-usage");
 			return;
 		}
-
-		final var id = arguments.getArgument(0);
 
 		if (particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.duplicate-renderer");
@@ -110,7 +110,7 @@ public class ParticleCommands extends AbstractCommand {
 
 		final var argumentList = Arrays.asList(arguments.getArguments());
 		final var text = String.join(" ", argumentList.subList(4, argumentList.size()));
-		final var renderer = particleHandler.createRenderer(user.getLocation(), particle, id, text, size, invert);
+		final var renderer = particleHandler.createRenderer(user.getLocation(), particle, id, text, size / 10F, invert);
 		renderer.render();
 
 		user.sendMessage("admin-commands.created-renderer", id);
@@ -129,10 +129,7 @@ public class ParticleCommands extends AbstractCommand {
 					"Type the command again §6within 10 seconds §cto confirm!",
 			expireAfter = 10
 	)
-	public void ptDeleteCommand(CommandArguments arguments) {
-		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final var id = arguments.getArgument(0);
-
+	public void ptDeleteCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
 			return;
@@ -153,10 +150,10 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.list",
 			usage = "/pt list",
 			desc = "Shows a list of registered particle renderers.",
+			allowInfiniteArgs = true,
 			senderType = PLAYER
 	)
-	public void ptListCommand(CommandArguments arguments) {
-		final var user = plugin.getUserManager().getUser(arguments.getSender());
+	public void ptListCommand(CommandArguments arguments, User user) {
 		final var list = String.join(", ", plugin.getParticleHandler().getRenderers().keySet());
 
 		if (list.isEmpty()) {
@@ -172,12 +169,10 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.tp",
 			usage = "/pt teleport <id>",
 			desc = "Teleports you to renderer origin.",
+			min = 1,
 			senderType = PLAYER
 	)
-	public void ptTeleportCommand(CommandArguments arguments) {
-		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final var id = arguments.getArgument(0);
-
+	public void ptTeleportCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
 			return;
@@ -190,16 +185,39 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
+			name = "pt.setsize",
+			permission = "pt.setsize",
+			usage = "/pt setsize <id> <size>",
+			desc = "Sets the particle size of the renderer.",
+			min = 2,
+			senderType = PLAYER
+	)
+	public void ptSetSizeMethod(CommandArguments arguments, User user, String id) {
+		if (!particleHandler.containsRenderer(id)) {
+			user.sendMessage("admin-commands.no-particle-renderer-found");
+			return;
+		}
+
+		final var config = ConfigUtils.getConfig(plugin, "renderers");
+		final var newSize = arguments.getArgumentAsFloat(1);
+		final var renderer = particleHandler.getRenderer(id);
+
+		renderer.setSize(newSize / 10F);
+
+		config.set("renderer-instances.%s.size".formatted(id), newSize / 10F);
+		ConfigUtils.saveConfig(plugin, config, "renderers");
+
+		user.sendMessage("admin-commands.set-size", id, newSize);
+	}
+
+	@Command(
 			name = "pt.tphere",
 			permission = "pt.tphere",
 			usage = "/pt tphere <id>",
 			desc = "Teleports renderer to your location.",
 			senderType = PLAYER
 	)
-	public void ptTpHereCommand(CommandArguments arguments) {
-		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final var id = arguments.getArgument(0);
-
+	public void ptTpHereCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
 			return;
@@ -225,10 +243,7 @@ public class ParticleCommands extends AbstractCommand {
 			desc = "Enable or disable target particle renderer.",
 			senderType = PLAYER
 	)
-	public void ptEnabledCommand(CommandArguments arguments) {
-		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final var id = arguments.getArgument(0);
-
+	public void ptEnabledCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
 			return;
@@ -256,9 +271,7 @@ public class ParticleCommands extends AbstractCommand {
 			desc = "Enable or disable target particle renderer.",
 			senderType = PLAYER
 	)
-	public void ptSetFontCommand(CommandArguments arguments) {
-		final var user = plugin.getUserManager().getUser(arguments.getSender());
-		final var id = arguments.getArgument(0);
+	public void ptSetFontCommand(CommandArguments arguments, User user, String id) {
 		final var particleRenderer = particleHandler.getRenderer(id);
 
 		if (particleRenderer == null) {
@@ -348,7 +361,6 @@ public class ParticleCommands extends AbstractCommand {
 					.create());
 		}
 	}
-
 
 	@Completer(
 			name = "pt",

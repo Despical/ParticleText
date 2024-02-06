@@ -26,8 +26,8 @@ public class ParticleRenderer {
 	private final String text;
 	private final boolean invert;
 	private final int stepX = 1, stepY = 1;
-	private final float size;
 
+	private float size;
 	private boolean enabled = true;
 	private Location location;
 	private BukkitTask renderTask;
@@ -102,6 +102,10 @@ public class ParticleRenderer {
 		} else {
 			this.stopRendering();
 		}
+	}
+
+	public void setSize(float size) {
+		this.size = size;
 	}
 
 	public void setFont(Font font) {

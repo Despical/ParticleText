@@ -3,7 +3,6 @@ package me.despical.particletext.commands;
 import me.despical.commandframework.Command;
 import me.despical.commandframework.CommandArguments;
 import me.despical.commandframework.Completer;
-import me.despical.commandframework.Confirmation;
 import me.despical.commons.configuration.ConfigUtils;
 import me.despical.commons.miscellaneous.MiscUtils;
 import me.despical.commons.serializer.LocationSerializer;
@@ -286,6 +285,7 @@ public class ParticleCommands extends AbstractCommand {
 			usage = "/pt font <id> <font name> <style> <size>",
 			desc = "Enable or disable target particle renderer.",
 			min = 1,
+			max = 4,
 			senderType = PLAYER
 	)
 	public void setFontCommand(CommandArguments arguments, User user, String id) {
@@ -314,6 +314,48 @@ public class ParticleCommands extends AbstractCommand {
 		} catch (Exception exception) {
 			user.sendRawMessage("&cThere isn't any font with given arguments!");
 		}
+	}
+
+	@Command(
+			name = "pt.particle",
+			permission = "pt.particle",
+			usage = "/pt font <id> <particle name>",
+			desc = "Change particle effect of the renderer.",
+			min = 1,
+			max = 2,
+			senderType = PLAYER
+	)
+	public void setParticleCommand(CommandArguments arguments, User user, String id) {
+		final var particleRenderer = particleHandler.getRenderer(id);
+
+		if (particleRenderer == null) {
+			user.sendMessage("admin-commands.no-particle-renderer-found");
+			return;
+		}
+
+		if (arguments.getLength() < 2) {
+			user.sendRawMessage("&cCorrect usage: /pt font <id> <particle name>");
+			return;
+		}
+
+		String particleName = arguments.getArgument(1);
+		ParticleEffect particle;
+
+		try {
+			particle = ParticleEffect.valueOf(particleName.toUpperCase());
+		} catch (Exception exception) {
+			user.sendMessage("admin-commands.no-particle-found", particleName);
+			return;
+		}
+
+		final var config = ConfigUtils.getConfig(plugin, "renderers");
+
+		config.set("renderer-instances.%s.particle".formatted(id), particleName);
+		ConfigUtils.saveConfig(plugin, config, "renderers");
+
+		particleRenderer.setParticle(particle);
+
+		user.sendMessage("admin-commands.particle-changed");
 	}
 
 	@Command(

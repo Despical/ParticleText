@@ -23,7 +23,6 @@ public class ParticleRenderer {
 	private static final Main plugin = JavaPlugin.getPlugin(Main.class);
 	private static final float degreesToRadians = 3.1415927f / 180;
 
-	private final ParticleEffect particle;
 	private final String text;
 	private final boolean invert;
 	private final int stepX = 1, stepY = 1;
@@ -33,6 +32,7 @@ public class ParticleRenderer {
 	private Location location;
 	private BukkitTask renderTask;
 	private BufferedImage image;
+	private ParticleBuilder particleBuilder;
 
 	public ParticleRenderer(Location location, ParticleEffect particle, String text, float size, boolean invert) {
 		this(location, particle, text, size, invert, new Font("Tahoma", Font.PLAIN, 16));
@@ -40,17 +40,15 @@ public class ParticleRenderer {
 
 	public ParticleRenderer(Location location, ParticleEffect particle, String text, float size, boolean invert, Font font) {
 		this.location = location;
-		this.particle = particle;
 		this.text = text;
 		this.invert = invert;
 		this.size = size;
 		this.image = ParticleUtils.stringToBufferedImage(font, text);
+		this.particleBuilder = new ParticleBuilder(particle);
 	}
 
 	public void render() {
 		renderTask = new BukkitRunnable() {
-
-			private final ParticleBuilder particleBuilder = new ParticleBuilder(particle);
 
 			@Override
 			public void run() {
@@ -110,6 +108,10 @@ public class ParticleRenderer {
 
 	public void setSize(float size) {
 		this.size = size;
+	}
+
+	public void setParticle(ParticleEffect particle) {
+		this.particleBuilder = new ParticleBuilder(particle);
 	}
 
 	public void setFont(Font font) {

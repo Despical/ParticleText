@@ -15,6 +15,7 @@ permissions:
       pt.list: true
       pt.tp: true
       pt.tphere: true
+      pt.particle: true
       pt.enabled: true
       pt.font: true
       pt.reload: true

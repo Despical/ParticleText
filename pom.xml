@@ -6,7 +6,7 @@
 
     <groupId>me.despical</groupId>
     <artifactId>particle-text</artifactId>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
 
     <name>Particle Text</name>

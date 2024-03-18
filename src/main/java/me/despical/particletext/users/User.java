@@ -28,6 +28,10 @@ public record User(Player player) {
         this.player.sendMessage(plugin.getChatManager().rawMessage(message));
     }
 
+    public void sendRawMessage(final String message, final Object... args) {
+        this.player.sendMessage(plugin.getChatManager().rawMessage(String.format(message, args)));
+    }
+
     public Location getLocation() {
         return this.player.getLocation();
     }

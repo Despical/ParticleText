@@ -12,17 +12,18 @@ import me.despical.particletext.Main;
 import me.despical.particletext.particles.ParticleRenderer;
 import me.despical.particletext.users.User;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Particle;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 import xyz.xenondevs.particle.ParticleEffect;
 
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -217,6 +218,7 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.tphere",
 			usage = "/pt tphere <id>",
 			desc = "Teleports renderer to your location.",
+			min = 1,
 			senderType = PLAYER
 	)
 	public void tpHereCommand(CommandArguments arguments, User user, String id) {
@@ -321,18 +323,17 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.help"
 	)
 	public void helpCommand(CommandArguments arguments) {
-		final var isPlayer = arguments.isSenderPlayer();
-		final var sender = arguments.getSender();
-
 		arguments.sendMessage("");
-		MiscUtils.sendCenteredMessage(sender, "&3&l---- Particle Text Admin Commands ----");
+		MiscUtils.sendCenteredMessage(arguments.getSender(), "&3&l---- Particle Text Commands ----");
 		arguments.sendMessage("");
 
-		for (final var command : plugin.getCommandFramework().getCommands().stream().sorted(Collections
-				.reverseOrder(Comparator.comparingInt(cmd -> cmd.usage().length()))).toList()) {
-			String usage = command.usage(), desc = command.desc();
+		final CommandSender sender = arguments.getSender();
+		final boolean isPlayer = arguments.isSenderPlayer();
 
-			if (usage.isEmpty() || usage.contains("help")) continue;
+		for (final var command : plugin.getCommandFramework().getSubCommands()) {
+			final String usage = command.usage(), desc = command.desc();
+
+			if (usage.isEmpty() || desc.isEmpty() || usage.contains("help")) continue;
 
 			if (isPlayer) {
 				((Player) sender).spigot().sendMessage(new ComponentBuilder(ChatColor.DARK_GRAY + " • ")
@@ -342,12 +343,13 @@ public class ParticleCommands extends AbstractCommand {
 						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(desc)))
 						.create());
 			} else {
-				sender.sendMessage(chatManager.rawMessage(" &8• &b" + usage + " &3- &b" + desc));
+				sender.sendMessage(" &8• &b" + usage + " &3- &b" + desc);
 			}
 		}
 
 		if (isPlayer) {
-			final var player = arguments.getSender();
+			final Player player = arguments.getSender();
+
 			player.sendMessage("");
 			player.spigot().sendMessage(new ComponentBuilder("TIP:").color(ChatColor.YELLOW).bold(true)
 					.append(" Try to ", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
@@ -382,7 +384,7 @@ public class ParticleCommands extends AbstractCommand {
 		}
 
 		if (args.length == 3 && arg.equalsIgnoreCase("create")) {
-			final var particleList = Stream.of(Particle.values()).map(Particle::name).sorted().toList();
+			final var particleList = Stream.of(ParticleEffect.values()).map(ParticleEffect::name).sorted().toList();
 
 			return StringUtil.copyPartialMatches(args[2], particleList, completions);
 		}

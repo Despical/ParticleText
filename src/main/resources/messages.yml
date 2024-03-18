@@ -1,6 +1,7 @@
 admin-commands:
-  did-you-mean: "&cDid you mean /%command%?"
-  correct-usage: "&cCorrect usage: /pt create <id> <particle type> <invert> <size> <text to show>"
+  did-you-mean: "&cDid you mean %command%?"
+  correct-usage: "&cCorrect usage: %usage%"
+  create-command-usage: "&cCorrect usage: /pt create <id> <particle type> <invert> <size> <text to show>"
   created-renderer: "&aCreated particle renderer successfully with id %s."
   duplicate-renderer: "&cThere is already a renderer with that name!"
   no-particle-renderer-found: "&cNo particle renderer found with that name!"

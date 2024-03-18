@@ -25,6 +25,7 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -40,18 +41,34 @@ public class ParticleCommands extends AbstractCommand {
 	public ParticleCommands(Main plugin) {
 		super(plugin);
 
-		plugin.getCommandFramework().addCustomParameter(User.class, args -> plugin.getUserManager().getUser(args.getSender()));
-		plugin.getCommandFramework().addCustomParameter(String.class, args -> args.getArgument(0));
-		plugin.getCommandFramework().setMatchFunction(arguments -> {
+		final var commandFramework = plugin.getCommandFramework();
+
+		commandFramework.addCustomParameter(User.class, args -> plugin.getUserManager().getUser(args.getSender()));
+		commandFramework.addCustomParameter(String.class, args -> args.getArgument(0));
+		commandFramework.setMatchFunction(arguments -> {
 			if (arguments.isArgumentsEmpty()) return false;
 
-			final String label = arguments.getLabel(), arg = arguments.getArgument(0);
-			final var matches = StringMatcher.match(arg, plugin.getCommandFramework().getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList()));
+			String label = arguments.getLabel(), arg = arguments.getArgument(0);
+			List<String> commands = commandFramework.getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList());
+			List<StringMatcher.Match> matches = StringMatcher.match(arg, commands);
 
 			if (!matches.isEmpty()) {
-				final var didYouMeanMsg = plugin.getChatManager().message("admin-commands.did-you-mean");
+				Optional<Command> optionalMatch = commandFramework.getCommands().stream().filter(cmd -> cmd.name().equals(label + "." + matches.get(0).getMatch())).findFirst();
 
-				arguments.sendMessage(didYouMeanMsg.replace("%command%", label + " " + matches.get(0).getMatch()));
+				if (optionalMatch.isPresent()) {
+					String matchedName = getMatchingParts(optionalMatch.get().name(), label + "." + String.join(".", arguments.getArguments()));
+					Optional<Command> matchedCommand = commandFramework.getSubCommands().stream().filter(cmd -> cmd.name().equals(matchedName)).findFirst();
+
+					if (matchedCommand.isPresent()) {
+						arguments.sendMessage(chatManager.message("admin-commands.correct-usage").replace("%usage%", matchedCommand.get().usage()));
+						return true;
+					}
+
+					arguments.sendMessage(chatManager.message("admin-commands.did-you-mean").replace("%command%", optionalMatch.get().usage()));
+					return true;
+				}
+
+				arguments.sendMessage(chatManager.message("admin-commands.did-you-mean").replace("%command%", label));
 				return true;
 			}
 
@@ -84,7 +101,7 @@ public class ParticleCommands extends AbstractCommand {
 		final int length = arguments.getLength();
 
 		if (length < 5) {
-			user.sendMessage("admin-commands.correct-usage");
+			user.sendMessage("admin-commands.create-command-usage");
 			return;
 		}
 
@@ -153,7 +170,6 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.list",
 			usage = "/pt list",
 			desc = "Shows a list of registered particle renderers.",
-			allowInfiniteArgs = true,
 			senderType = PLAYER
 	)
 	public void listCommand(CommandArguments arguments, User user) {
@@ -245,6 +261,7 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.enabled",
 			usage = "/pt enabled <id> <true/false>",
 			desc = "Enable or disable target particle renderer.",
+			min = 1,
 			senderType = PLAYER
 	)
 	public void enabledCommand(CommandArguments arguments, User user, String id) {
@@ -273,6 +290,7 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.font",
 			usage = "/pt font <id> <font name> <style> <size>",
 			desc = "Enable or disable target particle renderer.",
+			min = 1,
 			senderType = PLAYER
 	)
 	public void setFontCommand(CommandArguments arguments, User user, String id) {
@@ -307,8 +325,7 @@ public class ParticleCommands extends AbstractCommand {
 			name = "pt.reload",
 			usage = "/pt reload",
 			desc = "Reloads particle renderers and system files.",
-			permission = "pt.reload",
-			allowInfiniteArgs = true
+			permission = "pt.reload"
 	)
 	public void reloadCommand(CommandArguments arguments) {
 		plugin.getChatManager().reload();
@@ -393,5 +410,19 @@ public class ParticleCommands extends AbstractCommand {
 		if (args.length == 4 && arg.equalsIgnoreCase("create")) return List.of("true", "false");
 
 		return completions;
+	}
+
+	public String getMatchingParts(String matched, String current) {
+		String[] matchedArray = matched.split("\\."), currentArray = current.split("\\.");
+		int max = Math.min(matchedArray.length, currentArray.length);
+		List<String> matchingParts = new ArrayList<>();
+
+		for (int i = 0; i < max; i++) {
+			if (matchedArray[i].equals(currentArray[i])) {
+				matchingParts.add(matchedArray[i]);
+			}
+		}
+
+		return String.join(".", matchingParts);
 	}
 }

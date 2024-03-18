@@ -16,8 +16,4 @@ public abstract class AbstractCommand {
         this.particleHandler = plugin.getParticleHandler();
         this.plugin.getCommandFramework().registerCommands(this);
     }
-
-    public static void registerCommands(final Main plugin) {
-        new ParticleCommands(plugin);
-    }
 }

@@ -14,7 +14,7 @@ import java.util.UUID;
  */
 public record User(Player player) {
 
-    private final static Main plugin = JavaPlugin.getPlugin(Main.class);
+    private static final Main plugin = JavaPlugin.getPlugin(Main.class);
 
     public void sendMessage(final String path) {
         this.sendRawMessage(plugin.getChatManager().message(path));
@@ -26,10 +26,6 @@ public record User(Player player) {
 
     public void sendRawMessage(final String message) {
         this.player.sendMessage(plugin.getChatManager().rawMessage(message));
-    }
-
-    public void sendRawMessage(final String message, final Object... args) {
-        this.player.sendMessage(plugin.getChatManager().rawMessage(String.format(message, args)));
     }
 
     public Location getLocation() {

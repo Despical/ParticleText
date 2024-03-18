@@ -5,7 +5,7 @@ import me.despical.commons.serializer.LocationSerializer;
 import me.despical.particletext.Main;
 import me.despical.particletext.utils.ParticleUtils;
 import org.bukkit.Location;
-import org.bukkit.Particle;
+import xyz.xenondevs.particle.ParticleEffect;
 
 import javax.annotation.Nullable;
 import java.awt.*;
@@ -44,7 +44,7 @@ public class ParticleHandler {
 			if (id.equals("default")) continue;
 
 			String path = "renderer-instances.%s.".formatted(id), text = config.getString(path + "text");
-			Particle particle = Particle.valueOf(config.getString(path + "particle"));
+			ParticleEffect particle = ParticleEffect.valueOf(config.getString(path + "particle"));
 			Location location = LocationSerializer.fromString(config.getString(path + "location"));
 			float size = (float) config.getDouble(path + "size", .2F);
 			boolean inverted = config.getBoolean(path + "inverted");
@@ -56,7 +56,7 @@ public class ParticleHandler {
 		}
 	}
 
-	public ParticleRenderer createRenderer(Location location, Particle particle, String id, String text, float size, boolean inverted) {
+	public ParticleRenderer createRenderer(Location location, ParticleEffect particle, String id, String text, float size, boolean inverted) {
 		ParticleRenderer renderer = new ParticleRenderer(location, particle, text, size, inverted);
 		String path = "renderer-instances.%s.".formatted(id);
 

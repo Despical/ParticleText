@@ -2,7 +2,7 @@ package me.despical.particletext;
 
 import me.despical.commandframework.CommandFramework;
 import me.despical.commons.util.UpdateChecker;
-import me.despical.particletext.commands.AbstractCommand;
+import me.despical.particletext.commands.ParticleCommands;
 import me.despical.particletext.events.JoinQuitEvents;
 import me.despical.particletext.handlers.ChatManager;
 import me.despical.particletext.particles.ParticleHandler;
@@ -28,9 +28,6 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		if (!supportsParticle())
-			return;
-
 		this.initializeClasses();
 		this.checkUpdate();
 
@@ -55,16 +52,14 @@ public class Main extends JavaPlugin {
 		particleHandler = new ParticleHandler(this);
 		userManager = new UserManager(this);
 
-		AbstractCommand.registerCommands(this);
+		new ParticleCommands(this);
 
 		new JoinQuitEvents(this);
 		new Metrics(this, 18978);
 	}
 
 	private void setupConfigurationFiles() {
-		saveDefaultConfig();
-
-		Stream.of("messages", "renderers").filter(fileName -> !new File(getDataFolder(),fileName + ".yml").exists()).forEach(fileName -> this.saveResource(fileName + ".yml", false));
+		Stream.of("config", "messages", "renderers").filter(fileName -> !new File(getDataFolder(),fileName + ".yml").exists()).forEach(fileName -> this.saveResource(fileName + ".yml", false));
 	}
 
 	public @NotNull ChatManager getChatManager() {
@@ -81,17 +76,6 @@ public class Main extends JavaPlugin {
 
 	public @NotNull UserManager getUserManager() {
 		return userManager;
-	}
-
-	public boolean supportsParticle() {
-		try {
-			Class.forName("org.bukkit.Particle");
-			return true;
-		} catch (ClassNotFoundException exception) {
-			getLogger().severe("Your server does not support particles, we are disabling!..");
-			setEnabled(false);
-			return false;
-		}
 	}
 
 	private void checkUpdate() {

@@ -19,6 +19,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import xyz.xenondevs.particle.ParticleEffect;
 
 import java.awt.*;
 import java.util.*;
@@ -92,10 +93,10 @@ public class ParticleCommands extends AbstractCommand {
 		}
 
 		final var particleName = arguments.getArgument(1);
-		final Particle particle;
+		final ParticleEffect particle;
 
 		try {
-			particle = Particle.valueOf(particleName.toUpperCase());
+			particle = ParticleEffect.valueOf(particleName.toUpperCase());
 		} catch (Exception exception) {
 			user.sendMessage("admin-commands.no-particle-found", particleName);
 			return;

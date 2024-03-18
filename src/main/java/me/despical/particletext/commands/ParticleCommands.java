@@ -418,6 +418,28 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Completer(
+			name= "pt.particle",
+			permission = "pt.admin"
+	)
+	public List<String> particleCompleter(CommandArguments arguments) {
+		List<String> completions = new ArrayList<>();
+
+		if (arguments.getLength() == 1) {
+			final var idList = new ArrayList<>(particleHandler.getRenderers().keySet().stream().toList());
+
+			return StringUtil.copyPartialMatches(arguments.getArgument(0), idList, completions);
+		}
+
+		if (arguments.getLength() == 2) {
+			final var particleList = Stream.of(ParticleEffect.values()).map(ParticleEffect::name).sorted().toList();
+
+			return StringUtil.copyPartialMatches(arguments.getArgument(1), particleList, completions);
+		}
+
+		return completions;
+	}
+
+	@Completer(
 			name = "pt",
 			permission = "pt.admin"
 	)
@@ -430,7 +452,7 @@ public class ParticleCommands extends AbstractCommand {
 		}
 
 		if (args.length == 2) {
-			if (List.of("create", "list").contains(args[1])) return completions;
+			if (List.of("create", "list", "help", "reload").contains(args[0])) return completions;
 
 			final var idList = new ArrayList<>(particleHandler.getRenderers().keySet().stream().toList());
 

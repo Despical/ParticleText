@@ -8,7 +8,7 @@ admin-commands:
   no-particle-found: "&cThere is no particle with that name!"
   size-cannot-be-equal-0: "&cSize can not be equal or less than 0!"
   deleted-renderer: "&aParticle renderer called %s deleted successfully."
-  renderer-list: "&aRegistered particles: %list%"
+  renderer-list: "&aRegistered particle renderers: %list%"
   empty-list: "&cNo registered particle renderer found. Use '/pt create' to create one."
   moved-here: "&aParticle renderer called %s moved to your location."
   enabled-renderer: "&aParticle renderer called %s successfully enabled."

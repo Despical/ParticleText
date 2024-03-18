@@ -144,11 +144,6 @@ public class ParticleCommands extends AbstractCommand {
 			min = 1,
 			senderType = PLAYER
 	)
-	@Confirmation(
-			message = "§cAre you sure you want to do this action? " +
-					"Type the command again §6within 10 seconds §cto confirm!",
-			expireAfter = 10
-	)
 	public void deleteCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");

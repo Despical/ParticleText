@@ -6,7 +6,7 @@
 
     <groupId>me.despical</groupId>
     <artifactId>particle-text</artifactId>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <packaging>jar</packaging>
 
     <name>Particle Text</name>
@@ -45,12 +45,12 @@
         <dependency>
             <groupId>com.github.Despical</groupId>
             <artifactId>Commons</artifactId>
-            <version>1.7.1</version>
+            <version>1.7.3</version>
         </dependency>
         <dependency>
             <groupId>com.github.Despical</groupId>
             <artifactId>CommandFramework</artifactId>
-            <version>1.4.1</version>
+            <version>1.4.6</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>
@@ -58,9 +58,9 @@
             <version>3.0.2</version>
         </dependency>
         <dependency>
-            <groupId>xyz.xenondevs</groupId>
-            <artifactId>particle</artifactId>
-            <version>1.8.4</version>
+            <groupId>com.github.Despical</groupId>
+            <artifactId>ParticleLib</artifactId>
+            <version>1.0.7</version>
         </dependency>
     </dependencies>
 
@@ -103,10 +103,6 @@
                                 <relocation>
                                     <pattern>org.bstats</pattern>
                                     <shadedPattern>me.despical.particletext.utils</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>xyz.xenondevs.particle</pattern>
-                                    <shadedPattern>me.despical.particletext.particles</shadedPattern>
                                 </relocation>
                             </relocations>
                             <filters>

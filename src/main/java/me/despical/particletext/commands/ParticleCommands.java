@@ -7,6 +7,7 @@ import me.despical.commons.configuration.ConfigUtils;
 import me.despical.commons.miscellaneous.MiscUtils;
 import me.despical.commons.serializer.LocationSerializer;
 import me.despical.commons.string.StringMatcher;
+import me.despical.particle.ParticleEffect;
 import me.despical.particletext.Main;
 import me.despical.particletext.particles.ParticleRenderer;
 import me.despical.particletext.users.User;
@@ -18,7 +19,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
-import xyz.xenondevs.particle.ParticleEffect;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,8 +27,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static me.despical.commandframework.Command.SenderType.PLAYER;
 
 /**
  * @author Despical
@@ -42,37 +40,8 @@ public class ParticleCommands extends AbstractCommand {
 
 		final var commandFramework = plugin.getCommandFramework();
 
-		commandFramework.addCustomParameter(User.class, args -> plugin.getUserManager().getUser(args.getSender()));
-		commandFramework.addCustomParameter(String.class, args -> args.getArgument(0));
-		commandFramework.setMatchFunction(arguments -> {
-			if (arguments.isArgumentsEmpty()) return false;
-
-			String label = arguments.getLabel(), arg = arguments.getArgument(0);
-			List<String> commands = commandFramework.getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList());
-			List<StringMatcher.Match> matches = StringMatcher.match(arg, commands);
-
-			if (!matches.isEmpty()) {
-				Optional<Command> optionalMatch = commandFramework.getCommands().stream().filter(cmd -> cmd.name().equals(label + "." + matches.get(0).getMatch())).findFirst();
-
-				if (optionalMatch.isPresent()) {
-					String matchedName = getMatchingParts(optionalMatch.get().name(), label + "." + String.join(".", arguments.getArguments()));
-					Optional<Command> matchedCommand = commandFramework.getSubCommands().stream().filter(cmd -> cmd.name().equals(matchedName)).findFirst();
-
-					if (matchedCommand.isPresent()) {
-						arguments.sendMessage(chatManager.message("admin-commands.correct-usage").replace("%usage%", matchedCommand.get().usage()));
-						return true;
-					}
-
-					arguments.sendMessage(chatManager.message("admin-commands.did-you-mean").replace("%command%", optionalMatch.get().usage()));
-					return true;
-				}
-
-				arguments.sendMessage(chatManager.message("admin-commands.did-you-mean").replace("%command%", label));
-				return true;
-			}
-
-			return false;
-		});
+		commandFramework.addCustomParameter("User", args -> plugin.getUserManager().getUser(args.getSender()));
+		commandFramework.addCustomParameter("String", args -> args.getArgument(0));
 	}
 
 	@Command(
@@ -81,10 +50,38 @@ public class ParticleCommands extends AbstractCommand {
 			desc = "Main command of Pixel Painter."
 	)
 	public void mainCommand(CommandArguments arguments) {
-		arguments.sendMessage("&3This server is running &bParticle Text " + plugin.getDescription().getVersion() + " &3by &bDespical&3!");
+		if (arguments.isArgumentsEmpty()) {
+			arguments.sendMessage("&3This server is running &bParticle Text " + plugin.getDescription().getVersion() + " &3by &bDespical&3!");
 
-		if (arguments.hasPermission("pt.help")) {
-			arguments.sendMessage("&3Commands: &b/" + arguments.getLabel() + " help");
+			if (arguments.hasPermission("pt.help")) {
+				arguments.sendMessage("&3Commands: &b/" + arguments.getLabel() + " help");
+			}
+
+			return;
+		}
+
+		var commandFramework = plugin.getCommandFramework();
+		String label = arguments.getLabel(), arg = arguments.getArgument(0);
+		List<String> commands = commandFramework.getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList());
+		List<StringMatcher.Match> matches = StringMatcher.match(arg, commands);
+
+		if (!matches.isEmpty()) {
+			Optional<Command> optionalMatch = commandFramework.getCommands().stream().filter(cmd -> cmd.name().equals(label + "." + matches.get(0).getMatch())).findFirst();
+
+			if (optionalMatch.isPresent()) {
+				String matchedName = getMatchingParts(optionalMatch.get().name(), label + "." + String.join(".", arguments.getArguments()));
+				Optional<Command> matchedCommand = commandFramework.getSubCommands().stream().filter(cmd -> cmd.name().equals(matchedName)).findFirst();
+
+				if (matchedCommand.isPresent()) {
+					arguments.sendMessage(chatManager.message("admin-commands.correct-usage").replace("%usage%", matchedCommand.get().usage()));
+					return;
+				}
+
+				arguments.sendMessage(chatManager.message("admin-commands.did-you-mean").replace("%command%", optionalMatch.get().usage()));
+				return;
+			}
+
+			arguments.sendMessage(chatManager.message("admin-commands.did-you-mean").replace("%command%", label));
 		}
 	}
 
@@ -93,8 +90,7 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.create",
 			usage = "/pt create <id> <particle type> <invert> <size> <text to show>",
 			desc = "Shows a text message with specified particle effect.",
-			allowInfiniteArgs = true,
-			senderType = PLAYER
+			senderType = Command.SenderType.PLAYER
 	)
 	public void createCommand(CommandArguments arguments, User user, String id) {
 		final int length = arguments.getLength();
@@ -141,7 +137,7 @@ public class ParticleCommands extends AbstractCommand {
 			usage = "/pt delete <id>",
 			desc = "Delete the target particle renderer and stop rendering.",
 			min = 1,
-			senderType = PLAYER
+			senderType = Command.SenderType.PLAYER
 	)
 	public void deleteCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -164,7 +160,7 @@ public class ParticleCommands extends AbstractCommand {
 			permission = "pt.list",
 			usage = "/pt list",
 			desc = "Shows a list of registered particle renderers.",
-			senderType = PLAYER
+			senderType = Command.SenderType.PLAYER
 	)
 	public void listCommand(CommandArguments arguments, User user) {
 		final var list = String.join(", ", plugin.getParticleHandler().getRenderers().keySet());
@@ -183,7 +179,7 @@ public class ParticleCommands extends AbstractCommand {
 			usage = "/pt teleport <id>",
 			desc = "Teleports you to renderer origin.",
 			min = 1,
-			senderType = PLAYER
+			senderType = Command.SenderType.PLAYER
 	)
 	public void teleportCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -203,7 +199,7 @@ public class ParticleCommands extends AbstractCommand {
 			usage = "/pt setsize <id> <size>",
 			desc = "Sets the particle size of the renderer.",
 			min = 2,
-			senderType = PLAYER
+			senderType = Command.SenderType.PLAYER
 	)
 	public void setSizeMethod(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -229,7 +225,7 @@ public class ParticleCommands extends AbstractCommand {
 			usage = "/pt tphere <id>",
 			desc = "Teleports renderer to your location.",
 			min = 1,
-			senderType = PLAYER
+			senderType = Command.SenderType.PLAYER
 	)
 	public void tpHereCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -256,7 +252,7 @@ public class ParticleCommands extends AbstractCommand {
 			usage = "/pt enabled <id> <true/false>",
 			desc = "Enable or disable target particle renderer.",
 			min = 1,
-			senderType = PLAYER
+			senderType = Command.SenderType.PLAYER
 	)
 	public void enabledCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -286,7 +282,7 @@ public class ParticleCommands extends AbstractCommand {
 			desc = "Enable or disable target particle renderer.",
 			min = 1,
 			max = 4,
-			senderType = PLAYER
+			senderType = Command.SenderType.PLAYER
 	)
 	public void setFontCommand(CommandArguments arguments, User user, String id) {
 		final var particleRenderer = particleHandler.getRenderer(id);
@@ -323,7 +319,7 @@ public class ParticleCommands extends AbstractCommand {
 			desc = "Change particle effect of the renderer.",
 			min = 1,
 			max = 2,
-			senderType = PLAYER
+			senderType = Command.SenderType.PLAYER
 	)
 	public void setParticleCommand(CommandArguments arguments, User user, String id) {
 		final var particleRenderer = particleHandler.getRenderer(id);
@@ -471,7 +467,7 @@ public class ParticleCommands extends AbstractCommand {
 		return completions;
 	}
 
-	public String getMatchingParts(String matched, String current) {
+	private String getMatchingParts(String matched, String current) {
 		String[] matchedArray = matched.split("\\."), currentArray = current.split("\\.");
 		int max = Math.min(matchedArray.length, currentArray.length);
 		List<String> matchingParts = new ArrayList<>();

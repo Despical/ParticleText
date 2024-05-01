@@ -2,10 +2,10 @@ package me.despical.particletext.particles;
 
 import me.despical.commons.configuration.ConfigUtils;
 import me.despical.commons.serializer.LocationSerializer;
+import me.despical.particle.ParticleEffect;
 import me.despical.particletext.Main;
 import me.despical.particletext.utils.ParticleUtils;
 import org.bukkit.Location;
-import xyz.xenondevs.particle.ParticleEffect;
 
 import javax.annotation.Nullable;
 import java.awt.*;

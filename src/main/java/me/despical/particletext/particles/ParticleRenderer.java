@@ -1,14 +1,15 @@
 package me.despical.particletext.particles;
 
+import me.despical.particle.ParticleBuilder;
+import me.despical.particle.ParticleEffect;
 import me.despical.particletext.Main;
 import me.despical.particletext.utils.ParticleUtils;
+import me.despical.particletext.utils.VectorUtils;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
-import xyz.xenondevs.particle.ParticleBuilder;
-import xyz.xenondevs.particle.ParticleEffect;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -71,7 +72,7 @@ public class ParticleRenderer {
 							}
 
 							Vector vector = new Vector((float) image.getWidth() / 2 - x, (float) image.getHeight() / 2 - y, 0).multiply(size);
-							ParticleUtils.rotateAroundAxisY(vector, -location.getYaw() * degreesToRadians);
+							VectorUtils.rotateAroundAxisY(vector, -location.getYaw() * degreesToRadians);
 
 							particleBuilder.setLocation(location.add(vector)).display();
 

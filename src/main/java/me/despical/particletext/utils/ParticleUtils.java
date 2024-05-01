@@ -4,7 +4,6 @@ import me.despical.commons.configuration.ConfigUtils;
 import me.despical.commons.number.NumberUtils;
 import me.despical.particletext.Main;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.Vector;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -37,15 +36,6 @@ public class ParticleUtils {
 		graphics.drawString(s, 0, graphics.getFontMetrics().getAscent());
 		graphics.dispose();
 		return img;
-	}
-
-	public static void rotateAroundAxisY(Vector v, double angle) {
-		double x, z, cos, sin;
-		cos = Math.cos(angle);
-		sin = Math.sin(angle);
-		x = v.getX() * cos + v.getZ() * sin;
-		z = v.getX() * -sin + v.getZ() * cos;
-		v.setX(x).setZ(z);
 	}
 
 	public static Font getFont(String path) {

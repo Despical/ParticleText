@@ -62,11 +62,11 @@ public class ParticleCommands extends AbstractCommand {
 
 		var commandFramework = plugin.getCommandFramework();
 		String label = arguments.getLabel(), arg = arguments.getArgument(0);
-		List<String> commands = commandFramework.getCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList());
+		List<String> commands = commandFramework.getSubCommands().stream().map(cmd -> cmd.name().replace(label + ".", "")).collect(Collectors.toList());
 		List<StringMatcher.Match> matches = StringMatcher.match(arg, commands);
 
 		if (!matches.isEmpty()) {
-			Optional<Command> optionalMatch = commandFramework.getCommands().stream().filter(cmd -> cmd.name().equals(label + "." + matches.get(0).getMatch())).findFirst();
+			Optional<Command> optionalMatch = commandFramework.getSubCommands().stream().filter(cmd -> cmd.name().equals(label + "." + matches.get(0).getMatch())).findFirst();
 
 			if (optionalMatch.isPresent()) {
 				String matchedName = getMatchingParts(optionalMatch.get().name(), label + "." + String.join(".", arguments.getArguments()));
@@ -374,7 +374,7 @@ public class ParticleCommands extends AbstractCommand {
 	)
 	public void helpCommand(CommandArguments arguments) {
 		arguments.sendMessage("");
-		MiscUtils.sendCenteredMessage(arguments.getSender(), "&3&l---- Particle Text Commands ----");
+		MiscUtils.sendCenteredMessage(arguments.getSender(), "&3&l---- Particle Text ----");
 		arguments.sendMessage("");
 
 		final CommandSender sender = arguments.getSender();
@@ -414,7 +414,7 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Completer(
-			name= "pt.particle",
+			name = "pt.particle",
 			permission = "pt.admin"
 	)
 	public List<String> particleCompleter(CommandArguments arguments) {

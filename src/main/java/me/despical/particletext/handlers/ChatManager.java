@@ -7,24 +7,23 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class ChatManager {
 
-    private FileConfiguration config;
+	private final Main plugin;
+	private FileConfiguration config;
 
-    private final Main plugin;
+	public ChatManager(Main plugin) {
+		this.plugin = plugin;
+		this.config = ConfigUtils.getConfig(plugin, "messages");
+	}
 
-    public ChatManager(Main plugin) {
-        this.plugin = plugin;
-        this.config = ConfigUtils.getConfig(plugin, "messages");
-    }
+	public String message(final String path) {
+		return rawMessage(this.config.getString(path));
+	}
 
-    public String message(final String path) {
-        return rawMessage(this.config.getString(path));
-    }
+	public String rawMessage(final String message) {
+		return Strings.format(message);
+	}
 
-    public String rawMessage(final String message) {
-        return Strings.format(message);
-    }
-
-    public void reload() {
-        this.config = ConfigUtils.getConfig(plugin, "messages");
-    }
+	public void reload() {
+		this.config = ConfigUtils.getConfig(plugin, "messages");
+	}
 }

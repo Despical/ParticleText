@@ -59,7 +59,7 @@ public class Main extends JavaPlugin {
 	}
 
 	private void setupConfigurationFiles() {
-		Stream.of("config", "messages", "renderers").filter(fileName -> !new File(getDataFolder(),fileName + ".yml").exists()).forEach(fileName -> this.saveResource(fileName + ".yml", false));
+		Stream.of("config", "messages", "renderers").filter(fileName -> !new File(getDataFolder(), fileName + ".yml").exists()).forEach(fileName -> this.saveResource(fileName + ".yml", false));
 	}
 
 	public @NotNull ChatManager getChatManager() {

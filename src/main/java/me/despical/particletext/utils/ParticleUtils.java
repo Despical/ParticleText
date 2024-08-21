@@ -15,10 +15,10 @@ import java.awt.image.BufferedImage;
  */
 public class ParticleUtils {
 
+	private static final Main plugin = JavaPlugin.getPlugin(Main.class);
+
 	private ParticleUtils() {
 	}
-
-	private static final Main plugin = JavaPlugin.getPlugin(Main.class);
 
 	public static BufferedImage stringToBufferedImage(Font font, String s) {
 		var img = new BufferedImage(1, 1, BufferedImage.TYPE_4BYTE_ABGR);

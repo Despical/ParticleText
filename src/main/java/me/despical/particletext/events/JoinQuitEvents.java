@@ -8,21 +8,21 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 public class JoinQuitEvents implements Listener {
 
-    private final Main plugin;
+	private final Main plugin;
 
-    public JoinQuitEvents(Main plugin) {
-        this.plugin = plugin;
+	public JoinQuitEvents(Main plugin) {
+		this.plugin = plugin;
 
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
-    }
+		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+	}
 
-    @EventHandler
-    public void onJoin(PlayerJoinEvent event) {
-        plugin.getUserManager().addUser(event.getPlayer());
-    }
+	@EventHandler
+	public void onJoin(PlayerJoinEvent event) {
+		plugin.getUserManager().addUser(event.getPlayer());
+	}
 
-    @EventHandler
-    public void onQuit(PlayerQuitEvent event) {
-        plugin.getUserManager().removeUser(event.getPlayer());
-    }
+	@EventHandler
+	public void onQuit(PlayerQuitEvent event) {
+		plugin.getUserManager().removeUser(event.getPlayer());
+	}
 }

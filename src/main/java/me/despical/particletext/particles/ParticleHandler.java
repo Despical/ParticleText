@@ -29,7 +29,7 @@ public class ParticleHandler {
 	}
 
 	private void loadRenderers() {
-		var config =  ConfigUtils.getConfig(plugin, "renderers");
+		var config = ConfigUtils.getConfig(plugin, "renderers");
 		var section = config.getConfigurationSection("renderer-instances");
 
 		if (section == null) {
@@ -62,7 +62,7 @@ public class ParticleHandler {
 
 		this.rendererMap.put(id, renderer);
 
-		var config =  ConfigUtils.getConfig(plugin, "renderers");
+		var config = ConfigUtils.getConfig(plugin, "renderers");
 		config.set(path + "id", id);
 		config.set(path + "text", text);
 		config.set(path + "size", size);

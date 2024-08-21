@@ -14,37 +14,37 @@ import java.util.Set;
  */
 public class UserManager {
 
-    @NotNull
-    private final Set<User> users;
+	@NotNull
+	private final Set<User> users;
 
-    public UserManager(Main plugin) {
-        this.users = new HashSet<>();
+	public UserManager(Main plugin) {
+		this.users = new HashSet<>();
 
-        plugin.getServer().getOnlinePlayers().forEach(this::getUser);
-    }
+		plugin.getServer().getOnlinePlayers().forEach(this::getUser);
+	}
 
-    @NotNull
-    public User addUser(final Player player) {
-        final var user = new User(player);
+	@NotNull
+	public User addUser(final Player player) {
+		final var user = new User(player);
 
-        this.users.add(user);
-        return user;
-    }
+		this.users.add(user);
+		return user;
+	}
 
-    public void removeUser(final Player player) {
-        this.users.remove(this.getUser(player));
-    }
+	public void removeUser(final Player player) {
+		this.users.remove(this.getUser(player));
+	}
 
-    @NotNull
-    public User getUser(final Player player) {
-        final var uuid = player.getUniqueId();
+	@NotNull
+	public User getUser(final Player player) {
+		final var uuid = player.getUniqueId();
 
-        for (var user : this.users) {
-            if (uuid.equals(user.getUniqueId())) {
-                return user;
-            }
-        }
+		for (var user : this.users) {
+			if (uuid.equals(user.getUniqueId())) {
+				return user;
+			}
+		}
 
-        return this.addUser(player);
-    }
+		return this.addUser(player);
+	}
 }

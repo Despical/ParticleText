@@ -7,6 +7,7 @@ import me.despical.commons.configuration.ConfigUtils;
 import me.despical.commons.miscellaneous.MiscUtils;
 import me.despical.commons.serializer.LocationSerializer;
 import me.despical.commons.string.StringMatcher;
+import me.despical.commons.util.Strings;
 import me.despical.particle.ParticleEffect;
 import me.despical.particletext.Main;
 import me.despical.particletext.particles.ParticleRenderer;
@@ -45,9 +46,9 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt",
-			usage = "/pt help",
-			desc = "Main command of Pixel Painter."
+		name = "pt",
+		usage = "/pt",
+		desc = "Main command of the plugin."
 	)
 	public void mainCommand(CommandArguments arguments) {
 		if (arguments.isArgumentsEmpty()) {
@@ -86,11 +87,11 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.create",
-			permission = "pt.create",
-			usage = "/pt create <id> <particle type> <invert> <size> <text to show>",
-			desc = "Shows a text message with specified particle effect.",
-			senderType = Command.SenderType.PLAYER
+		name = "pt.create",
+		permission = "pt.create",
+		usage = "/pt create <id> <particle type> <invert> <size> <text to show>",
+		desc = "Shows a text message with specified particle effect.",
+		senderType = Command.SenderType.PLAYER
 	)
 	public void createCommand(CommandArguments arguments, User user, String id) {
 		final int length = arguments.getLength();
@@ -132,12 +133,12 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.delete",
-			permission = "pt.delete",
-			usage = "/pt delete <id>",
-			desc = "Delete the target particle renderer and stop rendering.",
-			min = 1,
-			senderType = Command.SenderType.PLAYER
+		name = "pt.delete",
+		permission = "pt.delete",
+		usage = "/pt delete <id>",
+		desc = "Delete the target particle renderer and stop rendering.",
+		min = 1,
+		senderType = Command.SenderType.PLAYER
 	)
 	public void deleteCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -156,11 +157,11 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.list",
-			permission = "pt.list",
-			usage = "/pt list",
-			desc = "Shows a list of registered particle renderers.",
-			senderType = Command.SenderType.PLAYER
+		name = "pt.list",
+		permission = "pt.list",
+		usage = "/pt list",
+		desc = "Shows a list of registered particle renderers.",
+		senderType = Command.SenderType.PLAYER
 	)
 	public void listCommand(CommandArguments arguments, User user) {
 		final var list = String.join(", ", plugin.getParticleHandler().getRenderers().keySet());
@@ -174,12 +175,12 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.teleport",
-			permission = "pt.tp",
-			usage = "/pt teleport <id>",
-			desc = "Teleports you to renderer origin.",
-			min = 1,
-			senderType = Command.SenderType.PLAYER
+		name = "pt.teleport",
+		permission = "pt.tp",
+		usage = "/pt teleport <id>",
+		desc = "Teleports you to renderer origin.",
+		min = 1,
+		senderType = Command.SenderType.PLAYER
 	)
 	public void teleportCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -194,12 +195,12 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.setsize",
-			permission = "pt.setsize",
-			usage = "/pt setsize <id> <size>",
-			desc = "Sets the particle size of the renderer.",
-			min = 2,
-			senderType = Command.SenderType.PLAYER
+		name = "pt.setsize",
+		permission = "pt.setsize",
+		usage = "/pt setsize <id> <size>",
+		desc = "Sets the particle size of the renderer.",
+		min = 2,
+		senderType = Command.SenderType.PLAYER
 	)
 	public void setSizeMethod(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -220,12 +221,12 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.tphere",
-			permission = "pt.tphere",
-			usage = "/pt tphere <id>",
-			desc = "Teleports renderer to your location.",
-			min = 1,
-			senderType = Command.SenderType.PLAYER
+		name = "pt.tphere",
+		permission = "pt.tphere",
+		usage = "/pt tphere <id>",
+		desc = "Teleports renderer to your location.",
+		min = 1,
+		senderType = Command.SenderType.PLAYER
 	)
 	public void tpHereCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -247,12 +248,12 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.enabled",
-			permission = "pt.enabled",
-			usage = "/pt enabled <id> <true/false>",
-			desc = "Enable or disable target particle renderer.",
-			min = 1,
-			senderType = Command.SenderType.PLAYER
+		name = "pt.enabled",
+		permission = "pt.enabled",
+		usage = "/pt enabled <id> <true/false>",
+		desc = "Enable or disable target particle renderer.",
+		min = 1,
+		senderType = Command.SenderType.PLAYER
 	)
 	public void enabledCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
@@ -276,13 +277,13 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.font",
-			permission = "pt.font",
-			usage = "/pt font <id> <font name> <style> <size>",
-			desc = "Enable or disable target particle renderer.",
-			min = 1,
-			max = 4,
-			senderType = Command.SenderType.PLAYER
+		name = "pt.font",
+		permission = "pt.font",
+		usage = "/pt font <id> <font name> <style> <size>",
+		desc = "Enable or disable target particle renderer.",
+		min = 1,
+		max = 4,
+		senderType = Command.SenderType.PLAYER
 	)
 	public void setFontCommand(CommandArguments arguments, User user, String id) {
 		final var particleRenderer = particleHandler.getRenderer(id);
@@ -313,13 +314,13 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.particle",
-			permission = "pt.particle",
-			usage = "/pt font <id> <particle name>",
-			desc = "Change particle effect of the renderer.",
-			min = 1,
-			max = 2,
-			senderType = Command.SenderType.PLAYER
+		name = "pt.particle",
+		permission = "pt.particle",
+		usage = "/pt font <id> <particle name>",
+		desc = "Change particle effect of the renderer.",
+		min = 1,
+		max = 2,
+		senderType = Command.SenderType.PLAYER
 	)
 	public void setParticleCommand(CommandArguments arguments, User user, String id) {
 		final var particleRenderer = particleHandler.getRenderer(id);
@@ -355,10 +356,10 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Command(
-			name = "pt.reload",
-			usage = "/pt reload",
-			desc = "Reloads particle renderers and system files.",
-			permission = "pt.reload"
+		name = "pt.reload",
+		usage = "/pt reload",
+		desc = "Reloads particle renderers and system files.",
+		permission = "pt.reload"
 	)
 	public void reloadCommand(CommandArguments arguments) {
 		plugin.getChatManager().reload();
@@ -369,31 +370,35 @@ public class ParticleCommands extends AbstractCommand {
 
 	@SuppressWarnings("deprecation")
 	@Command(
-			name = "pt.help",
-			permission = "pt.help"
+		name = "pt.help",
+		usage = "/pt help",
+		desc = "Displays a list of available commands along with their descriptions.",
+		permission = "pt.help"
 	)
 	public void helpCommand(CommandArguments arguments) {
 		arguments.sendMessage("");
-		MiscUtils.sendCenteredMessage(arguments.getSender(), "&3&l---- Particle Text ----");
+		MiscUtils.sendCenteredMessage(arguments.getSender(), "&3&lParticle Text");
+		MiscUtils.sendCenteredMessage(arguments.getSender(), "&3[&boptional argument&3] &b- &3<&brequired argument&3>");
 		arguments.sendMessage("");
 
 		final CommandSender sender = arguments.getSender();
 		final boolean isPlayer = arguments.isSenderPlayer();
 
 		for (final var command : plugin.getCommandFramework().getSubCommands()) {
-			final String usage = command.usage(), desc = command.desc();
+			final String usage = formatCommandUsage(command.usage()), desc = command.desc();
 
-			if (usage.isEmpty() || desc.isEmpty() || usage.contains("help")) continue;
+			if (desc.isEmpty()) continue;
 
 			if (isPlayer) {
-				((Player) sender).spigot().sendMessage(new ComponentBuilder(ChatColor.DARK_GRAY + " • ")
+				((Player) sender).spigot().sendMessage(
+					new ComponentBuilder(ChatColor.DARK_GRAY + " • ")
 						.append(usage)
 						.color(ChatColor.AQUA)
-						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, usage))
+						.event(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, command.usage()))
 						.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(desc)))
 						.create());
 			} else {
-				sender.sendMessage(" &8• &b" + usage + " &3- &b" + desc);
+				arguments.sendMessage(" &8• " + usage + " &3- &b" + desc);
 			}
 		}
 
@@ -402,20 +407,20 @@ public class ParticleCommands extends AbstractCommand {
 
 			player.sendMessage("");
 			player.spigot().sendMessage(new ComponentBuilder("TIP:").color(ChatColor.YELLOW).bold(true)
-					.append(" Try to ", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
-					.append("hover").color(ChatColor.WHITE).underlined(true)
-					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.LIGHT_PURPLE + "Hover on the commands to get info about them.")))
-					.append(" or ", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
-					.append("click").color(ChatColor.WHITE).underlined(true)
-					.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.LIGHT_PURPLE + "Click on the commands to insert them in the chat.")))
-					.append(" on the commands!", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
-					.create());
+				.append(" Try to ", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
+				.append("hover").color(ChatColor.WHITE).underlined(true)
+				.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.LIGHT_PURPLE + "Hover on the commands to get info about them.")))
+				.append(" or ", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
+				.append("click").color(ChatColor.WHITE).underlined(true)
+				.event(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.LIGHT_PURPLE + "Click on the commands to insert them in the chat.")))
+				.append(" on the commands!", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
+				.create());
 		}
 	}
 
 	@Completer(
-			name = "pt.particle",
-			permission = "pt.admin"
+		name = "pt.particle",
+		permission = "pt.admin"
 	)
 	public List<String> particleCompleter(CommandArguments arguments) {
 		List<String> completions = new ArrayList<>();
@@ -436,8 +441,8 @@ public class ParticleCommands extends AbstractCommand {
 	}
 
 	@Completer(
-			name = "pt",
-			permission = "pt.admin"
+		name = "pt",
+		permission = "pt.admin"
 	)
 	public List<String> ptTabCompleter(CommandArguments arguments) {
 		final List<String> completions = new ArrayList<>(), commands = plugin.getCommandFramework().getSubCommands().stream().map(cmd -> cmd.name().replace(arguments.getLabel() + '.', "")).collect(Collectors.toList());
@@ -479,5 +484,21 @@ public class ParticleCommands extends AbstractCommand {
 		}
 
 		return String.join(".", matchingParts);
+	}
+
+	private String formatCommandUsage(String usage) {
+		usage = "&3" + usage;
+
+		final var array = usage.toCharArray();
+		final var buffer = new StringBuilder(usage);
+
+		for (int i = 0; i < array.length; i++) {
+			if (array[i] == '[' || array[i] == '<') {
+				buffer.insert(i, "&b");
+				return Strings.format(buffer.toString());
+			}
+		}
+
+		return Strings.format(usage);
 	}
 }

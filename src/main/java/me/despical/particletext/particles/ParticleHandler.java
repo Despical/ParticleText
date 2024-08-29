@@ -49,8 +49,9 @@ public class ParticleHandler {
 			float size = (float) config.getDouble(path + "size", .2F);
 			boolean inverted = config.getBoolean(path + "inverted");
 			Font font = ParticleUtils.getFont(path + "font");
+			Rotation rotation = new Rotation(config.getDouble(path + "angleX"), config.getDouble(path + "angleY"), config.getDouble(path + "angleZ"));
 
-			ParticleRenderer renderer = new ParticleRenderer(location, particle, text, size, inverted, font);
+			ParticleRenderer renderer = new ParticleRenderer(location, particle, text, size, inverted, font, rotation);
 			renderer.setEnabled(config.getBoolean(path + "enabled", true));
 			this.rendererMap.put(id, renderer);
 		}
@@ -69,6 +70,9 @@ public class ParticleHandler {
 		config.set(path + "particle", particle.name());
 		config.set(path + "inverted", inverted);
 		config.set(path + "enabled", true);
+		config.set(path + "angleX", 0D);
+		config.set(path + "angleY", 0D);
+		config.set(path + "angleZ", 0D);
 		config.set(path + "font", "Tahoma:0:16");
 		config.set(path + "location", LocationSerializer.toString(location));
 

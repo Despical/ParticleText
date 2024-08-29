@@ -27,6 +27,7 @@ public class ParticleRenderer {
 	private final String text;
 	private final boolean invert;
 	private final int stepX = 1, stepY = 1;
+	private final Rotation rotation;
 
 	private float size;
 	private boolean enabled = true;
@@ -36,16 +37,17 @@ public class ParticleRenderer {
 	private ParticleBuilder particleBuilder;
 
 	public ParticleRenderer(Location location, ParticleEffect particle, String text, float size, boolean invert) {
-		this(location, particle, text, size, invert, new Font("Tahoma", Font.PLAIN, 16));
+		this(location, particle, text, size, invert, new Font("Tahoma", Font.PLAIN, 16), new Rotation());
 	}
 
-	public ParticleRenderer(Location location, ParticleEffect particle, String text, float size, boolean invert, Font font) {
+	public ParticleRenderer(Location location, ParticleEffect particle, String text, float size, boolean invert, Font font, Rotation rotation) {
 		this.location = location;
 		this.text = text;
 		this.invert = invert;
 		this.size = size;
 		this.image = ParticleUtils.stringToBufferedImage(font, text);
 		this.particleBuilder = new ParticleBuilder(particle);
+		this.rotation = rotation;
 	}
 
 	public void render() {
@@ -71,10 +73,13 @@ public class ParticleRenderer {
 								continue;
 							}
 
-							Vector vector = new Vector((float) image.getWidth() / 2 - x, (float) image.getHeight() / 2 - y, 0).multiply(size);
-							VectorUtils.rotateAroundAxisY(vector, -location.getYaw() * degreesToRadians);
+							Vector vector = new Vector((float) image.getWidth() / 2 - x, (float) image.getHeight() / 2 - y, 0);
+							VectorUtils.rotateAroundAxisY(vector, location.getYaw() * degreesToRadians);
+							VectorUtils.rotateAroundAxisX(vector, Math.toRadians(rotation.getAngleX()));
+							VectorUtils.rotateAroundAxisY(vector, Math.toRadians(rotation.getAngleY()));
+							VectorUtils.rotateAroundAxisZ(vector, Math.toRadians(rotation.getAngleZ()));
 
-							particleBuilder.setLocation(location.add(vector)).display();
+							particleBuilder.setLocation(location.add(vector.multiply(size))).display();
 
 							location.subtract(vector);
 						}
@@ -117,5 +122,9 @@ public class ParticleRenderer {
 
 	public void setFont(Font font) {
 		this.image = ParticleUtils.stringToBufferedImage(font, text);
+	}
+
+	public Rotation getRotation() {
+		return rotation;
 	}
 }

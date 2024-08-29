@@ -202,7 +202,7 @@ public class ParticleCommands extends AbstractCommand {
 		min = 2,
 		senderType = Command.SenderType.PLAYER
 	)
-	public void setSizeMethod(CommandArguments arguments, User user, String id) {
+	public void setSizeCommand(CommandArguments arguments, User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
 			return;
@@ -217,7 +217,48 @@ public class ParticleCommands extends AbstractCommand {
 		config.set("renderer-instances.%s.size".formatted(id), newSize / 10F);
 		ConfigUtils.saveConfig(plugin, config, "renderers");
 
-		user.sendMessage("admin-commands.set-size", id, newSize);
+		user.sendMessage("admin-commands.set-size", id, "%.2f".formatted(newSize));
+	}
+
+	@Command(
+		name = "pt.rotate",
+		permission = "pt.rotate",
+		usage = "/pt rotate <id> <X | Y | Z> <angle>",
+		desc = "Rotates the specified particle renderer in the given axis.",
+		min = 3,
+		senderType = Command.SenderType.PLAYER
+	)
+	public void rotateCommand(CommandArguments arguments, User user, String id) {
+		if (!particleHandler.containsRenderer(id)) {
+			user.sendMessage("admin-commands.no-particle-renderer-found");
+			return;
+		}
+
+		final var config = ConfigUtils.getConfig(plugin, "renderers");
+		final var axis = arguments.getArgument(1);
+		final boolean isAxisX = "x".equalsIgnoreCase(axis), isAxisY = "y".equalsIgnoreCase(axis);
+
+		if (!(isAxisX || isAxisY || "z".equalsIgnoreCase(axis))) {
+			user.sendMessage("admin-commands.invalid-axis", axis);
+			return;
+		}
+
+		final var renderer = particleHandler.getRenderer(id);
+		final var angle = arguments.getArgumentAsDouble(2);
+		final var rotation = renderer.getRotation();
+
+		if (isAxisX) {
+			rotation.setAngleX(angle);
+		} else if (isAxisY) {
+			rotation.setAngleY(angle);
+		} else {
+			rotation.setAngleZ(angle);
+		}
+
+		config.set("renderer-instances.%s.%s".formatted(id, "angle" + axis.toUpperCase()), angle);
+		ConfigUtils.saveConfig(plugin, config, "renderers");
+
+		user.sendMessage("admin-commands.rotated-renderer", id, axis, angle);
 	}
 
 	@Command(
@@ -455,19 +496,30 @@ public class ParticleCommands extends AbstractCommand {
 		if (args.length == 2) {
 			if (List.of("create", "list", "help", "reload").contains(args[0])) return completions;
 
+			if ("rotate".equals(args[0])) {
+				return StringUtil.copyPartialMatches(args[1], List.of("X", "Y", "Z"), completions);
+			}
+
 			final var idList = new ArrayList<>(particleHandler.getRenderers().keySet().stream().toList());
 
 			return StringUtil.copyPartialMatches(args[1], idList, completions);
 		}
 
-		if (args.length == 3 && arg.equalsIgnoreCase("create")) {
+		if (args.length == 3 && arg.equals("create")) {
 			final var particleList = Stream.of(ParticleEffect.values()).map(ParticleEffect::name).sorted().toList();
 
 			return StringUtil.copyPartialMatches(args[2], particleList, completions);
 		}
 
-		if (args.length == 3 && arg.equalsIgnoreCase("enabled")) return List.of("true", "false");
-		if (args.length == 4 && arg.equalsIgnoreCase("create")) return List.of("true", "false");
+		if (args.length == 3) {
+			if (arg.equals("enabled")) {
+				return StringUtil.copyPartialMatches(args[2], List.of("true", "false"), completions);
+			}
+		}
+
+		if (args.length == 4 && arg.equalsIgnoreCase("create")) {
+			return StringUtil.copyPartialMatches(args[3], List.of("true", "false"), completions);
+		}
 
 		return completions;
 	}

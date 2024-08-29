@@ -7,12 +7,14 @@ import org.bukkit.util.Vector;
  * <p>
  * Created at 22.03.2024
  */
-public class VectorUtils {
+public final class VectorUtils {
 
 	private VectorUtils() {
 	}
 
 	public static void rotateAroundAxisX(Vector v, double angle) {
+		if (angle == 0) return;
+
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
 		double y = cos * v.getY() - sin * v.getZ();
@@ -29,6 +31,8 @@ public class VectorUtils {
 	}
 
 	public static void rotateAroundAxisZ(Vector v, double angle) {
+		if (angle == 0) return;
+
 		double cos = Math.cos(angle);
 		double sin = Math.sin(angle);
 		double x = cos * v.getX() - sin * v.getY();

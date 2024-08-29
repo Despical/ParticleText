@@ -20,4 +20,5 @@ permissions:
       pt.reload: true
       pt.help: true
       pt.setsize: true
+      pt.rotate: true
       pt.tabcompleter: true

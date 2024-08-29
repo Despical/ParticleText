@@ -5,6 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.text.MessageFormat;
 import java.util.UUID;
 
 /**
@@ -29,7 +30,7 @@ public record User(Player player) {
 	}
 
 	public void sendRawMessage(final String message, final Object... args) {
-		this.player.sendMessage(plugin.getChatManager().rawMessage(String.format(message, args)));
+		this.player.sendMessage(plugin.getChatManager().rawMessage(MessageFormat.format(message, args)));
 	}
 
 	public Location getLocation() {

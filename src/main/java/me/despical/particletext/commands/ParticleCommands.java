@@ -223,7 +223,7 @@ public class ParticleCommands extends AbstractCommand {
 	@Command(
 		name = "pt.rotate",
 		permission = "pt.rotate",
-		usage = "/pt rotate <id> <X | Y | Z> <angle>",
+		usage = "/pt rotate <id> <axis> <angle>",
 		desc = "Rotates the specified particle renderer in the given axis.",
 		min = 3,
 		senderType = Command.SenderType.PLAYER

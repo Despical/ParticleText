@@ -86,8 +86,6 @@ public class Main extends JavaPlugin {
 				final var logger = getLogger();
 
 				logger.info("Found a new version available: v" + result.getNewestVersion());
-				logger.info("Download it on SpigotMC:");
-				logger.info("https://www.spigotmc.org/resources/110996/");
 			}
 		});
 	}

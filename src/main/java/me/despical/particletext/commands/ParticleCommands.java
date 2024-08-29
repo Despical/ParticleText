@@ -140,7 +140,7 @@ public class ParticleCommands extends AbstractCommand {
 		min = 1,
 		senderType = Command.SenderType.PLAYER
 	)
-	public void deleteCommand(CommandArguments arguments, User user, String id) {
+	public void deleteCommand(User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
 			return;
@@ -163,7 +163,7 @@ public class ParticleCommands extends AbstractCommand {
 		desc = "Shows a list of registered particle renderers.",
 		senderType = Command.SenderType.PLAYER
 	)
-	public void listCommand(CommandArguments arguments, User user) {
+	public void listCommand(User user) {
 		final var list = String.join(", ", plugin.getParticleHandler().getRenderers().keySet());
 
 		if (list.isEmpty()) {
@@ -182,7 +182,7 @@ public class ParticleCommands extends AbstractCommand {
 		min = 1,
 		senderType = Command.SenderType.PLAYER
 	)
-	public void teleportCommand(CommandArguments arguments, User user, String id) {
+	public void teleportCommand(User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
 			return;
@@ -228,7 +228,7 @@ public class ParticleCommands extends AbstractCommand {
 		min = 1,
 		senderType = Command.SenderType.PLAYER
 	)
-	public void tpHereCommand(CommandArguments arguments, User user, String id) {
+	public void tpHereCommand(User user, String id) {
 		if (!particleHandler.containsRenderer(id)) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
 			return;
@@ -316,7 +316,7 @@ public class ParticleCommands extends AbstractCommand {
 	@Command(
 		name = "pt.particle",
 		permission = "pt.particle",
-		usage = "/pt font <id> <particle name>",
+		usage = "/pt particle <id> <particle name>",
 		desc = "Change particle effect of the renderer.",
 		min = 1,
 		max = 2,
@@ -358,7 +358,7 @@ public class ParticleCommands extends AbstractCommand {
 	@Command(
 		name = "pt.reload",
 		usage = "/pt reload",
-		desc = "Reloads particle renderers and system files.",
+		desc = "Reloads the particle renderers and configuration files.",
 		permission = "pt.reload"
 	)
 	public void reloadCommand(CommandArguments arguments) {
@@ -442,7 +442,7 @@ public class ParticleCommands extends AbstractCommand {
 
 	@Completer(
 		name = "pt",
-		permission = "pt.admin"
+		permission = "pt.tabcompleter"
 	)
 	public List<String> ptTabCompleter(CommandArguments arguments) {
 		final List<String> completions = new ArrayList<>(), commands = plugin.getCommandFramework().getSubCommands().stream().map(cmd -> cmd.name().replace(arguments.getLabel() + '.', "")).collect(Collectors.toList());

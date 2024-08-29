@@ -4,7 +4,6 @@ version: ${project.version}
 main: me.despical.particletext.Main
 api-version: 1.13
 description: Show any text using Minecraft particles
-website: https://www.spigotmc.org/resources/110996
 
 permissions:
   pt.*:
@@ -21,3 +20,4 @@ permissions:
       pt.reload: true
       pt.help: true
       pt.setsize: true
+      pt.tabcompleter: true

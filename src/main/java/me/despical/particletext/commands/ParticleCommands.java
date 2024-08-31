@@ -36,8 +36,11 @@ import java.util.stream.Stream;
  */
 public class ParticleCommands extends AbstractCommand {
 
+	private final List<String> particleNames;
+
 	public ParticleCommands(Main plugin) {
 		super(plugin);
+		this.particleNames = Stream.of(ParticleEffect.values()).map(ParticleEffect::name).sorted().toList();
 
 		final var commandFramework = plugin.getCommandFramework();
 
@@ -494,15 +497,16 @@ public class ParticleCommands extends AbstractCommand {
 		}
 
 		if (args.length == 2) {
-			if (List.of("create", "list", "help", "reload").contains(args[0])) return completions;
 
 			if ("rotate".equals(args[0])) {
 				return StringUtil.copyPartialMatches(args[1], List.of("X", "Y", "Z"), completions);
 			}
 
-			final var idList = new ArrayList<>(particleHandler.getRenderers().keySet().stream().toList());
+			if (List.of("tphere", "teleport", "setsize", "rotate", "particle", "font", "enabled", "delete", "text").contains(args[0])) {
+				final var idList = new ArrayList<>(particleHandler.getRenderers().keySet().stream().toList());
 
-			return StringUtil.copyPartialMatches(args[1], idList, completions);
+				return StringUtil.copyPartialMatches(args[1], idList, completions);
+			}
 		}
 
 		if (args.length == 3 && arg.equals("create")) {

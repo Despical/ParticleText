@@ -42,7 +42,7 @@ public class ParticleCommands extends AbstractCommand {
 		super(plugin);
 		this.particleNames = Stream.of(ParticleEffect.values()).map(ParticleEffect::name).sorted().toList();
 
-		final var commandFramework = plugin.getCommandFramework();
+		var commandFramework = plugin.getCommandFramework();
 
 		commandFramework.addCustomParameter("User", args -> plugin.getUserManager().getUser(args.getSender()));
 		commandFramework.addCustomParameter("String", args -> args.getArgument(0));
@@ -97,7 +97,7 @@ public class ParticleCommands extends AbstractCommand {
 		senderType = Command.SenderType.PLAYER
 	)
 	public void createCommand(CommandArguments arguments, User user, String id) {
-		final int length = arguments.getLength();
+		int length = arguments.getLength();
 
 		if (length < 5) {
 			user.sendMessage("admin-commands.create-command-usage");
@@ -109,8 +109,8 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final var particleName = arguments.getArgument(1);
-		final ParticleEffect particle;
+		var particleName = arguments.getArgument(1);
+		ParticleEffect particle;
 
 		try {
 			particle = ParticleEffect.valueOf(particleName.toUpperCase());
@@ -119,17 +119,17 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final boolean invert = arguments.getArgumentAsBoolean(2);
-		final float size = arguments.getArgumentAsFloat(3);
+		boolean invert = arguments.getArgumentAsBoolean(2);
+		float size = arguments.getArgumentAsFloat(3);
 
 		if (size <= 0) {
 			user.sendMessage("admin-commands.size-cannot-be-equal-0");
 			return;
 		}
 
-		final var argumentList = Arrays.asList(arguments.getArguments());
-		final var text = String.join(" ", argumentList.subList(4, argumentList.size()));
-		final var renderer = particleHandler.createRenderer(user.getLocation(), particle, id, text, size / 10F, invert);
+		var argumentList = Arrays.asList(arguments.getArguments());
+		var text = String.join(" ", argumentList.subList(4, argumentList.size()));
+		var renderer = particleHandler.createRenderer(user.getLocation(), particle, id, text, size / 10F, invert);
 		renderer.render();
 
 		user.sendMessage("admin-commands.created-renderer", id);
@@ -151,7 +151,7 @@ public class ParticleCommands extends AbstractCommand {
 
 		particleHandler.removeRenderer(id);
 
-		final var config = ConfigUtils.getConfig(plugin, "renderers");
+		var config = ConfigUtils.getConfig(plugin, "renderers");
 		config.set("renderer-instances.%s".formatted(id), null);
 
 		ConfigUtils.saveConfig(plugin, config, "renderers");
@@ -167,7 +167,7 @@ public class ParticleCommands extends AbstractCommand {
 		senderType = Command.SenderType.PLAYER
 	)
 	public void listCommand(User user) {
-		final var list = String.join(", ", plugin.getParticleHandler().getRenderers().keySet());
+		String list = String.join(", ", plugin.getParticleHandler().getRenderers().keySet());
 
 		if (list.isEmpty()) {
 			user.sendMessage("admin-commands.empty-list");
@@ -191,8 +191,8 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final var config = ConfigUtils.getConfig(plugin, "renderers");
-		final var location = LocationSerializer.fromString(config.getString("renderer-instances.%s.location".formatted(id)));
+		var config = ConfigUtils.getConfig(plugin, "renderers");
+		var location = LocationSerializer.fromString(config.getString("renderer-instances.%s.location".formatted(id)));
 
 		user.player().teleport(location);
 	}
@@ -211,9 +211,9 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final var config = ConfigUtils.getConfig(plugin, "renderers");
-		final var newSize = arguments.getArgumentAsFloat(1);
-		final var renderer = particleHandler.getRenderer(id);
+		var config = ConfigUtils.getConfig(plugin, "renderers");
+		var newSize = arguments.getArgumentAsFloat(1);
+		var renderer = particleHandler.getRenderer(id);
 
 		renderer.setSize(newSize / 10F);
 
@@ -237,18 +237,18 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final var config = ConfigUtils.getConfig(plugin, "renderers");
-		final var axis = arguments.getArgument(1);
-		final boolean isAxisX = "x".equalsIgnoreCase(axis), isAxisY = "y".equalsIgnoreCase(axis);
+		var config = ConfigUtils.getConfig(plugin, "renderers");
+		var axis = arguments.getArgument(1);
+		boolean isAxisX = "x".equalsIgnoreCase(axis), isAxisY = "y".equalsIgnoreCase(axis);
 
 		if (!(isAxisX || isAxisY || "z".equalsIgnoreCase(axis))) {
 			user.sendMessage("admin-commands.invalid-axis", axis);
 			return;
 		}
 
-		final var renderer = particleHandler.getRenderer(id);
-		final var angle = arguments.getArgumentAsDouble(2);
-		final var rotation = renderer.getRotation();
+		var renderer = particleHandler.getRenderer(id);
+		var angle = arguments.getArgumentAsDouble(2);
+		var rotation = renderer.getRotation();
 
 		if (isAxisX) {
 			rotation.setAngleX(angle);
@@ -278,7 +278,7 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final var config = ConfigUtils.getConfig(plugin, "renderers");
+		var config = ConfigUtils.getConfig(plugin, "renderers");
 		config.set("renderer-instances.%s.location".formatted(id), LocationSerializer.toString(user.getLocation()));
 		ConfigUtils.saveConfig(plugin, config, "renderers");
 
@@ -305,8 +305,8 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final var enabled = arguments.getArgumentAsBoolean(1);
-		final var config = ConfigUtils.getConfig(plugin, "renderers");
+		boolean enabled = arguments.getArgumentAsBoolean(1);
+		var config = ConfigUtils.getConfig(plugin, "renderers");
 
 		config.set("renderer-instances.%s.enabled".formatted(id), enabled);
 		ConfigUtils.saveConfig(plugin, config, "renderers");
@@ -330,7 +330,7 @@ public class ParticleCommands extends AbstractCommand {
 		senderType = Command.SenderType.PLAYER
 	)
 	public void setFontCommand(CommandArguments arguments, User user, String id) {
-		final var particleRenderer = particleHandler.getRenderer(id);
+		var particleRenderer = particleHandler.getRenderer(id);
 
 		if (particleRenderer == null) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
@@ -343,8 +343,8 @@ public class ParticleCommands extends AbstractCommand {
 		}
 
 		try {
-			final var font = new Font(arguments.getArgument(1), arguments.getArgumentAsInt(2), arguments.getArgumentAsInt(3));
-			final var config = ConfigUtils.getConfig(plugin, "renderers");
+			 var font = new Font(arguments.getArgument(1), arguments.getArgumentAsInt(2), arguments.getArgumentAsInt(3));
+			var config = ConfigUtils.getConfig(plugin, "renderers");
 
 			config.set("renderer-instances.%s.font".formatted(id), "%s:%d:%d".formatted(font.getFontName(), font.getStyle(), font.getSize()));
 			ConfigUtils.saveConfig(plugin, config, "renderers");
@@ -367,7 +367,7 @@ public class ParticleCommands extends AbstractCommand {
 		senderType = Command.SenderType.PLAYER
 	)
 	public void setParticleCommand(CommandArguments arguments, User user, String id) {
-		final var particleRenderer = particleHandler.getRenderer(id);
+		var particleRenderer = particleHandler.getRenderer(id);
 
 		if (particleRenderer == null) {
 			user.sendMessage("admin-commands.no-particle-renderer-found");
@@ -389,7 +389,7 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		final var config = ConfigUtils.getConfig(plugin, "renderers");
+		var config = ConfigUtils.getConfig(plugin, "renderers");
 
 		config.set("renderer-instances.%s.particle".formatted(id), particleName);
 		ConfigUtils.saveConfig(plugin, config, "renderers");
@@ -425,10 +425,10 @@ public class ParticleCommands extends AbstractCommand {
 		MiscUtils.sendCenteredMessage(arguments.getSender(), "&3[&boptional argument&3] &b- &3<&brequired argument&3>");
 		arguments.sendMessage("");
 
-		final CommandSender sender = arguments.getSender();
-		final boolean isPlayer = arguments.isSenderPlayer();
+		CommandSender sender = arguments.getSender();
+		boolean isPlayer = arguments.isSenderPlayer();
 
-		for (final var command : plugin.getCommandFramework().getSubCommands()) {
+		for (Command command : plugin.getCommandFramework().getSubCommands()) {
 			final String usage = formatCommandUsage(command.usage()), desc = command.desc();
 
 			if (desc.isEmpty()) continue;
@@ -447,8 +447,7 @@ public class ParticleCommands extends AbstractCommand {
 		}
 
 		if (isPlayer) {
-			final Player player = arguments.getSender();
-
+			Player player = arguments.getSender();
 			player.sendMessage("");
 			player.spigot().sendMessage(new ComponentBuilder("TIP:").color(ChatColor.YELLOW).bold(true)
 				.append(" Try to ", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
@@ -460,6 +459,33 @@ public class ParticleCommands extends AbstractCommand {
 				.append(" on the commands!", ComponentBuilder.FormatRetention.NONE).color(ChatColor.GRAY)
 				.create());
 		}
+	}
+
+	@Command(
+		name = "pt.version",
+		usage = "/pt version",
+		desc = "Displays detailed information about the plugin and server environment.",
+		permission = "pt.version",
+		senderType = Command.SenderType.PLAYER
+	)
+	public void infoCommand(CommandArguments arguments) {
+		Player player = arguments.getSender();
+
+		arguments.sendMessage("");
+		MiscUtils.sendCenteredMessage(player, "&b&l==== [ &3&lEaster Eggs &b&l] ==== ");
+		arguments.sendMessage("");
+		arguments.sendMessage(" &8• &3Plugin Version: &b{0}", plugin.getDescription().getVersion());
+		arguments.sendMessage(" &8• &3Server Version: &b{0}", plugin.getServer().getVersion());
+		arguments.sendMessage(" &8• &3Bukkit Version: &b{0}", plugin.getServer().getBukkitVersion());
+		arguments.sendMessage(" &8• &3Loaded Plugins: &b{0}", plugin.getServer().getPluginManager().getPlugins().length);
+		arguments.sendMessage("");
+		arguments.sendMessage(" &8• &3Java Version: &b{0}", System.getProperty("java.version"));
+		arguments.sendMessage(" &8• &3Java Vendor: &b{0}", System.getProperty("java.vendor"));
+		arguments.sendMessage(" &8• &3JVM Version: &b{0}", System.getProperty("java.vm.version"));
+		arguments.sendMessage(" &8• &3JVM Name: &b{0}", System.getProperty("java.vm.name"));
+		arguments.sendMessage("");
+		arguments.sendMessage(" &8• &3OS Name: &b{0} ({1})", System.getProperty("os.name"), System.getProperty("os.arch"));
+		arguments.sendMessage("");
 	}
 
 	@Completer(
@@ -497,7 +523,6 @@ public class ParticleCommands extends AbstractCommand {
 		}
 
 		if (args.length == 2) {
-
 			if ("rotate".equals(args[0])) {
 				return StringUtil.copyPartialMatches(args[1], List.of("X", "Y", "Z"), completions);
 			}

@@ -21,4 +21,5 @@ permissions:
       pt.help: true
       pt.setsize: true
       pt.rotate: true
+      pt.version: true
       pt.tabcompleter: true

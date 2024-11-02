@@ -4,8 +4,7 @@ import me.despical.particletext.Main;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Despical
@@ -14,35 +13,32 @@ import java.util.Set;
  */
 public class UserManager {
 
-	@NotNull
-	private final Set<User> users;
+	private final Map<UUID, User> users;
 
 	public UserManager(Main plugin) {
-		this.users = new HashSet<>();
+		this.users = new HashMap<>();
 
-		plugin.getServer().getOnlinePlayers().forEach(this::getUser);
+		plugin.getServer().getOnlinePlayers().forEach(this::addUser);
 	}
 
 	@NotNull
-	public User addUser(final Player player) {
-		final var user = new User(player);
+	public User addUser(Player player) {
+		User user = new User(player);
 
-		this.users.add(user);
+		users.put(player.getUniqueId(), user);
 		return user;
 	}
 
-	public void removeUser(final Player player) {
-		this.users.remove(this.getUser(player));
+	public void removeUser(Player player) {
+		users.remove(player.getUniqueId());
 	}
 
 	@NotNull
-	public User getUser(final Player player) {
-		final var uuid = player.getUniqueId();
+	public User getUser(Player player) {
+		User user = users.get(player.getUniqueId());
 
-		for (var user : this.users) {
-			if (uuid.equals(user.getUniqueId())) {
-				return user;
-			}
+		if (user != null) {
+			return user;
 		}
 
 		return this.addUser(player);

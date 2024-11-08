@@ -6,6 +6,7 @@ import me.despical.particletext.commands.ParticleCommands;
 import me.despical.particletext.events.JoinQuitEvents;
 import me.despical.particletext.handlers.ChatManager;
 import me.despical.particletext.particles.ParticleHandler;
+import me.despical.particletext.particles.ParticleRenderer;
 import me.despical.particletext.users.UserManager;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -38,10 +39,11 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		for (var entry : particleHandler.getRenderers().entrySet()) {
-			var renderer = entry.getValue();
+			ParticleRenderer renderer = entry.getValue();
 
-			if (renderer != null)
+			if (renderer != null) {
 				renderer.stopRendering();
+			}
 		}
 	}
 
@@ -60,7 +62,9 @@ public class Main extends JavaPlugin {
 	}
 
 	private void setupConfigurationFiles() {
-		Stream.of("config", "messages", "renderers").filter(fileName -> !new File(getDataFolder(), fileName + ".yml").exists()).forEach(fileName -> this.saveResource(fileName + ".yml", false));
+		saveDefaultConfig();
+
+		Stream.of("messages", "renderers").filter(fileName -> !new File(getDataFolder(), fileName + ".yml").exists()).forEach(fileName -> this.saveResource(fileName + ".yml", false));
 	}
 
 	public @NotNull ChatManager getChatManager() {
@@ -84,9 +88,7 @@ public class Main extends JavaPlugin {
 
 		UpdateChecker.init(this, 110996).requestUpdateCheck().whenComplete((result, exception) -> {
 			if (result.requiresUpdate()) {
-				final var logger = getLogger();
-
-				logger.info("Found a new version available: v" + result.getNewestVersion());
+				getLogger().info("Found a new version available: v" + result.getNewestVersion());
 			}
 		});
 	}

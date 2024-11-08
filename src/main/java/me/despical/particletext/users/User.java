@@ -17,19 +17,19 @@ public record User(Player player) {
 
 	private static final Main plugin = JavaPlugin.getPlugin(Main.class);
 
-	public void sendMessage(final String path) {
+	public void sendMessage(String path) {
 		this.sendRawMessage(plugin.getChatManager().message(path));
 	}
 
-	public void sendMessage(final String path, final Object... args) {
+	public void sendMessage(String path, Object... args) {
 		this.sendRawMessage(plugin.getChatManager().message(path), args);
 	}
 
-	public void sendRawMessage(final String message) {
+	public void sendRawMessage(String message) {
 		this.player.sendMessage(plugin.getChatManager().rawMessage(message));
 	}
 
-	public void sendRawMessage(final String message, final Object... args) {
+	public void sendRawMessage(String message, Object... args) {
 		this.player.sendMessage(plugin.getChatManager().rawMessage(MessageFormat.format(message, args)));
 	}
 

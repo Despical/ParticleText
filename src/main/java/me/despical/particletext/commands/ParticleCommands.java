@@ -55,7 +55,7 @@ public class ParticleCommands extends AbstractCommand {
 	)
 	public void mainCommand(CommandArguments arguments) {
 		if (arguments.isArgumentsEmpty()) {
-			arguments.sendMessage("&3This server is running &bParticle Text " + plugin.getDescription().getVersion() + " &3by &bDespical&3!");
+			arguments.sendMessage("&3This server is running &bParticle Text " + plugin.getDescription().getVersion() + " &3by &bDespical&3.");
 
 			if (arguments.hasPermission("pt.help")) {
 				arguments.sendMessage("&3Commands: &b/" + arguments.getLabel() + " help");
@@ -109,7 +109,7 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		var particleName = arguments.getArgument(1);
+		String particleName = arguments.getArgument(1);
 		ParticleEffect particle;
 
 		try {
@@ -127,9 +127,9 @@ public class ParticleCommands extends AbstractCommand {
 			return;
 		}
 
-		var argumentList = Arrays.asList(arguments.getArguments());
-		var text = String.join(" ", argumentList.subList(4, argumentList.size()));
-		var renderer = particleHandler.createRenderer(user.getLocation(), particle, id, text, size / 10F, invert);
+		List<String> argumentList = Arrays.asList(arguments.getArguments());
+		String text = String.join(" ", argumentList.subList(4, argumentList.size()));
+		ParticleRenderer renderer = particleHandler.createRenderer(user.getLocation(), particle, id, text, size / 10F, invert);
 		renderer.render();
 
 		user.sendMessage("admin-commands.created-renderer", id);
@@ -472,7 +472,7 @@ public class ParticleCommands extends AbstractCommand {
 		Player player = arguments.getSender();
 
 		arguments.sendMessage("");
-		MiscUtils.sendCenteredMessage(player, "&b&l==== [ &3&lEaster Eggs &b&l] ==== ");
+		MiscUtils.sendCenteredMessage(player, "&b&l==== [ &3&lParticle Text &b&l] ==== ");
 		arguments.sendMessage("");
 		arguments.sendMessage(" &8• &3Plugin Version: &b{0}", plugin.getDescription().getVersion());
 		arguments.sendMessage(" &8• &3Server Version: &b{0}", plugin.getServer().getVersion());
@@ -490,7 +490,7 @@ public class ParticleCommands extends AbstractCommand {
 
 	@Completer(
 		name = "pt.particle",
-		permission = "pt.admin"
+		permission = "pt.particle"
 	)
 	public List<String> particleCompleter(CommandArguments arguments) {
 		List<String> completions = new ArrayList<>();
@@ -502,9 +502,7 @@ public class ParticleCommands extends AbstractCommand {
 		}
 
 		if (arguments.getLength() == 2) {
-			final var particleList = Stream.of(ParticleEffect.values()).map(ParticleEffect::name).sorted().toList();
-
-			return StringUtil.copyPartialMatches(arguments.getArgument(1), particleList, completions);
+			return StringUtil.copyPartialMatches(arguments.getArgument(1), particleNames, completions);
 		}
 
 		return completions;

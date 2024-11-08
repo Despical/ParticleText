@@ -10,7 +10,7 @@ public abstract class AbstractCommand {
 	protected final ChatManager chatManager;
 	protected final ParticleHandler particleHandler;
 
-	public AbstractCommand(final Main plugin) {
+	public AbstractCommand(Main plugin) {
 		this.plugin = plugin;
 		this.chatManager = plugin.getChatManager();
 		this.particleHandler = plugin.getParticleHandler();

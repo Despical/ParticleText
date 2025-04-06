@@ -19,6 +19,38 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <developers>
+        <developer>
+            <id>Despical</id>
+            <name>Berke Akçen</name>
+            <email>berkeakcen@gmail.com</email>
+            <url>https://www.spigotmc.org/members/615094/</url>
+        </developer>
+    </developers>
+
+    <profiles>
+        <profile>
+            <id>Despical</id>
+            <activation>
+                <property>
+                    <name>user.name</name>
+                    <value>berke</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-jar-plugin</artifactId>
+                        <configuration>
+                            <outputDirectory>C:/Users/berke/OneDrive/Masaüstü/1.9.9/plugins/</outputDirectory>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <repositories>
         <repository>
             <id>papermc-repo</id>
@@ -74,7 +106,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.13.0</version>
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
@@ -83,9 +115,8 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.4.1</version>
                 <configuration>
-                    <outputDirectory>C:\Users\berke\OneDrive\Masaüstü\1.9.9\plugins</outputDirectory>
                     <archive>
                         <addMavenDescriptor>false</addMavenDescriptor>
                     </archive>
@@ -94,7 +125,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.4.1</version>
+                <version>3.5.3</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

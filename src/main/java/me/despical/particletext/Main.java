@@ -13,6 +13,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.util.Objects;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -29,8 +31,8 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		this.initializeClasses();
-		this.checkUpdate();
+		initializeClasses();
+		checkUpdate();
 
 		getLogger().info("Initialization finished.");
 		getLogger().info("Join our Discord server: https://discord.gg/uXVU8jmtpU");
@@ -38,17 +40,15 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		for (var entry : particleHandler.getRenderers().entrySet()) {
-			ParticleRenderer renderer = entry.getValue();
-
-			if (renderer != null) {
-				renderer.stopRendering();
-			}
-		}
+		particleHandler.getRenderers()
+			.values()
+			.stream()
+			.filter(Objects::nonNull)
+			.forEach(ParticleRenderer::stopRendering);
 	}
 
 	private void initializeClasses() {
-		this.setupConfigurationFiles();
+		createFiles();
 
 		chatManager = new ChatManager(this);
 		commandFramework = new CommandFramework(this);
@@ -61,35 +61,38 @@ public class Main extends JavaPlugin {
 		new Metrics(this, 18978);
 	}
 
-	private void setupConfigurationFiles() {
+	private void createFiles() {
 		saveDefaultConfig();
 
-		Stream.of("messages", "renderers").filter(fileName -> !new File(getDataFolder(), fileName + ".yml").exists()).forEach(fileName -> this.saveResource(fileName + ".yml", false));
+		Stream.of("messages", "renderers")
+			.map(fileName -> new File(getDataFolder(), fileName + ".yml"))
+			.filter(Predicate.not(File::exists))
+			.forEach(file -> saveResource(file.getName(), false));
 	}
 
-	public @NotNull ChatManager getChatManager() {
+	@NotNull
+	public ChatManager getChatManager() {
 		return chatManager;
 	}
 
-	public @NotNull CommandFramework getCommandFramework() {
+	@NotNull
+	public CommandFramework getCommandFramework() {
 		return commandFramework;
 	}
 
-	public @NotNull ParticleHandler getParticleHandler() {
+	@NotNull
+	public ParticleHandler getParticleHandler() {
 		return particleHandler;
 	}
 
-	public @NotNull UserManager getUserManager() {
+	@NotNull
+	public UserManager getUserManager() {
 		return userManager;
 	}
 
 	private void checkUpdate() {
 		if (!getConfig().getBoolean("Updates-Enabled", true)) return;
 
-		UpdateChecker.init(this, 110996).requestUpdateCheck().whenComplete((result, exception) -> {
-			if (result.requiresUpdate()) {
-				getLogger().info("Found a new version available: v" + result.getNewestVersion());
-			}
-		});
+		UpdateChecker.init(this, 110996).onNewUpdate(result -> getLogger().info("Found a new version available: v" + result.getNewestVersion()));
 	}
 }

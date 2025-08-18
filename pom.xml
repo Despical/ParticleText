@@ -6,7 +6,7 @@
 
     <groupId>me.despical</groupId>
     <artifactId>particle-text</artifactId>
-    <version>1.1.7</version>
+    <version>1.1.8</version>
 
     <name>Particle Text</name>
     <inceptionYear>2023</inceptionYear>
@@ -27,29 +27,6 @@
             <url>https://www.spigotmc.org/members/615094/</url>
         </developer>
     </developers>
-
-    <profiles>
-        <profile>
-            <id>Despical</id>
-            <activation>
-                <property>
-                    <name>user.name</name>
-                    <value>berke</value>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-jar-plugin</artifactId>
-                        <configuration>
-                            <outputDirectory>C:/Users/berke/OneDrive/Masaüstü/1.9.9/plugins/</outputDirectory>
-                        </configuration>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
 
     <repositories>
         <repository>
@@ -76,12 +53,12 @@
         <dependency>
             <groupId>com.github.Despical</groupId>
             <artifactId>Commons</artifactId>
-            <version>1.9.5</version>
+            <version>1.9.8</version>
         </dependency>
         <dependency>
             <groupId>com.github.Despical</groupId>
             <artifactId>CommandFramework</artifactId>
-            <version>1.5.13</version>
+            <version>1.5.2</version>
         </dependency>
         <dependency>
             <groupId>org.bstats</groupId>

@@ -70,7 +70,7 @@ public class ParticleCommands extends AbstractCommand {
 		List<StringMatcher.Match> matches = StringMatcher.match(arg, commands);
 
 		if (!matches.isEmpty()) {
-			Optional<Command> optionalMatch = commandFramework.getSubCommands().stream().filter(cmd -> cmd.name().equals(label + "." + matches.get(0).getMatch())).findFirst();
+			Optional<Command> optionalMatch = commandFramework.getSubCommands().stream().filter(cmd -> cmd.name().equals(label + "." + matches.getFirst().match())).findFirst();
 
 			if (optionalMatch.isPresent()) {
 				String matchedName = getMatchingParts(optionalMatch.get().name(), label + "." + String.join(".", arguments.getArguments()));

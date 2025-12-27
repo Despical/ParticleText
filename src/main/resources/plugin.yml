@@ -1,10 +1,10 @@
 name: ParticleText
 author: Despical
-version: ${project.version}
-description: ${project.description}
-main: me.despical.particletext.Main
-
+version: ${version}
 api-version: 1.13
+main: dev.despical.particletext.ParticleTextPlugin
+description: Show any text using Minecraft particles.
+
 softdepend:
   - Multiverse-Core
   - SlimeWorldManager

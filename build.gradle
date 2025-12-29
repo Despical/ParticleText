@@ -24,8 +24,9 @@ dependencies {
     compileOnly 'com.destroystokyo.paper:paper-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.7'
 
-    implementation 'org.bstats:bstats-bukkit:3.1.0'
-    implementation 'dev.despical:commons:2.0.6'
+    implementation('org.bstats:bstats-bukkit:3.1.0') {
+        exclude group: 'org.slf4j'
+    }
     implementation 'dev.despical:command-framework:1.5.7'
     implementation 'com.github.Despical:ParticleLib:1.0.7'
 
@@ -52,11 +53,11 @@ tasks.jar {
 tasks.shadowJar {
     minimize()
 
-    relocate 'dev.despical.commons', 'dev.despical.particletext.commons'
-    relocate 'dev.despical.commandframework', 'dev.despical.particletext.command'
-    relocate 'dev.despical.inventoryframework', 'dev.despical.particletext.gui'
-    relocate 'me.despical.particle', 'dev.despical.particletext.particlelib'
-    relocate 'org.bstats', 'dev.despical.particletext.util'
+    relocate 'dev.despical.commons', 'dev.despical.particletext.lib.commons'
+    relocate 'dev.despical.commandframework', 'dev.despical.particletext.lib.commandframework'
+    relocate 'dev.despical.inventoryframework', 'dev.despical.particletext.lib.inventoryframework'
+    relocate 'me.despical.particle', 'dev.despical.particletext.lib.particlelib'
+    relocate 'org.bstats', 'dev.despical.particletext.lib.bstats'
 
     exclude 'META-INF/**'
     exclude 'fonts/**'

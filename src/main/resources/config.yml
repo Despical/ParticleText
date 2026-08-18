@@ -1,2 +1,110 @@
-# Should we send a log message if there is new version available?
-Updates-Enabled: true
+# ============================================================================
+#                                                                            #
+#                         Particle Text Configuration                        #
+#                                by Despical                                 #
+#                                                                            #
+# ============================================================================
+
+# Controls how often particle text is rendered and how much work each renderer may perform.
+# Lower limits generally improve server performance at the cost of visual quality or range.
+performance:
+
+  # Sets the number of server ticks between particle render passes.
+  # Lower values make animations appear smoother but increase particle and CPU usage.
+  render-interval-ticks: 2
+
+  # Sets the delay in server ticks before the first render pass begins after startup or reload.
+  initial-delay-ticks: 20
+
+  # Sets the maximum distance in blocks at which players can see a renderer.
+  # Players outside this radius are skipped before any particles are sent to them.
+  view-distance: 32.0
+
+  # Samples every nth pixel from the rasterized text image.
+  # Larger values reduce particle count and detail, while 1 preserves every eligible pixel.
+  pixel-step: 1
+
+  # Limits the number of particle points cached for a single renderer.
+  # Text exceeding this limit is sampled evenly so its overall shape remains recognizable.
+  max-points-per-renderer: 1500
+
+  # Limits the text length accepted by the create and text commands.
+  # Placeholder output is also truncated to this length before its point cloud is generated.
+  max-text-length: 128
+
+  # Forces particles to render regardless of the receiving player's particle preference.
+  # Enabling this can improve visibility but may negatively affect clients with weaker hardware.
+  force-particles: false
+
+  # Sets how often dynamic PlaceholderAPI text is resolved again, measured in server ticks.
+  # Higher values reduce placeholder and point-cloud recalculation work.
+  placeholder-refresh-ticks: 100
+
+
+# Defines the initial values copied into renderers created with /pt create.
+# Existing renderers keep the individual values stored in renderers.yml.
+defaults:
+
+  # Sets the particle type used by newly created renderers.
+  # Only particles that do not require additional Bukkit data are supported.
+  particle: FLAME
+
+  # Sets the text scale used by newly created renderers.
+  # Accepted values range from 0.01 to 10.0.
+  scale: 0.20
+
+  # Controls whether newly created renderers use background pixels instead of glyph pixels.
+  # This creates an inverted rectangular text effect and usually produces more particles.
+  inverted: false
+
+  # Controls whether newly created renderers begin rendering immediately.
+  enabled: true
+
+  # Groups the font settings copied into newly created renderers.
+  # Font availability depends on the fonts installed in the server's Java environment.
+  font:
+
+    # Sets the system font family used to rasterize newly created text.
+    # SansSerif is Java's portable fallback and works without an installed custom font.
+    name: SansSerif
+
+    # Sets the font style: PLAIN, BOLD, ITALIC, or BOLD_ITALIC.
+    style: PLAIN
+
+    # Sets the rasterization font size used by newly created renderers.
+    # Accepted values range from 4 to 128; larger sizes generate more source pixels.
+    size: 16
+
+
+# Defines the appearance and dimensions of the renderer inventory menu.
+# Changes are cached and become visible after running /pt reload and reopening the menu.
+menu:
+
+  # Sets the MiniMessage title displayed at the top of the renderer menu.
+  # Hex colors, gradients, decorations, and other supported MiniMessage tags may be used.
+  title: '<gradient:#00E5FF:#7C4DFF><bold>ParticleText Renderers</bold></gradient>'
+
+  # Sets the menu height in inventory rows; accepted values are 2 through 6.
+  rows: 6
+
+  # Sets the Bukkit material used for enabled renderer entries.
+  # Invalid or air materials fall back to LIME_DYE.
+  enabled-material: LIME_DYE
+
+  # Sets the Bukkit material used for disabled renderer entries.
+  # Invalid or air materials fall back to GRAY_DYE.
+  disabled-material: GRAY_DYE
+
+  # Sets the Bukkit material used by the previous-page button.
+  previous-page-material: ARROW
+
+  # Sets the Bukkit material used by the next-page button.
+  next-page-material: ARROW
+
+  # Sets the Bukkit material shown when no renderers exist.
+  # Invalid or air materials fall back to BARRIER.
+  empty-material: BARRIER
+
+
+# If enabled, the plugin checks for newer releases on startup.
+updates-enabled: true

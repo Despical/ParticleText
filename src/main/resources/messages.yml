@@ -1,21 +1,72 @@
-admin-commands:
-  did-you-mean: "&cDid you mean %command%?"
-  correct-usage: "&cCorrect usage: %usage%"
-  create-command-usage: "&cCorrect usage: /pt create <id> <particle type> <invert> <size> <text to show>"
-  created-renderer: "&aCreated particle renderer successfully with id {0}."
-  duplicate-renderer: "&cThere is already a renderer with that name!"
-  no-particle-renderer-found: "&cNo particle renderer found with that name!"
-  no-particle-found: "&cThere is no particle with that name!"
-  size-cannot-be-equal-0: "&cSize can not be equal or less than 0!"
-  deleted-renderer: "&aParticle renderer called {0} deleted successfully."
-  renderer-list: "&aRegistered particle renderers: %list%"
-  empty-list: "&cNo registered particle renderer found. Use '/pt create' to create one."
-  moved-here: "&aParticle renderer called {0} moved to your location."
-  enabled-renderer: "&aParticle renderer called {0} successfully enabled."
-  disabled-renderer: "&aParticle renderer called {0} successfully disabled."
-  font-changed: "&aFont has been changed successfully."
-  particle-changed: "&aParticle effect has been changed successfully."
-  system-reloaded: "&aSystem files successfully reloaded."
-  set-size: "&aThe renderer size of {0} is set to {1}."
-  invalid-axis: "&cThe provided axis is not valid for this operation!"
-  rotated-renderer: "&aThe particle renderer is successfully rotated {2} degrees in the {1} axis."
+# Messages use Adventure MiniMessage. Hex colors, gradients, hover and click
+# events are supported. PlaceholderAPI placeholders are resolved for players.
+
+prefix: '<gradient:#00E5FF:#7C4DFF><bold>ParticleText</bold></gradient> <#37474F>» '
+plugin-info: '%prefix%<#BDBDBD>Running <#00E5FF>v%version% <#BDBDBD>by <#7C4DFF>Despical<#BDBDBD>.'
+unrecognized-arguments: '%prefix%<#FF5252>Unknown arguments. <#BDBDBD>Use <#FFCA28>/%label% help<#BDBDBD>.'
+correct-usage: '%prefix%<#FF5252>Correct usage: <#FFCA28>%usage%'
+player-only: '%prefix%<#FF5252>This command can only be used by a player.'
+invalid-id: '%prefix%<#FF5252>IDs may only contain lowercase letters, numbers, underscores, and hyphens (max 32).'
+renderer-exists: '%prefix%<#FF5252>A renderer named <#FFCA28>%id% <#FF5252>already exists.'
+renderer-not-found: '%prefix%<#FF5252>No renderer named <#FFCA28>%id% <#FF5252>was found.'
+renderer-created: '%prefix%<#00E676>Created <#FFCA28>%id% <#00E676>with the cached defaults.'
+renderer-deleted: '%prefix%<#00E676>Deleted <#FFCA28>%id%<#00E676>.'
+renderer-list: '%prefix%<#BDBDBD>Renderers (<#00E5FF>%count%<#BDBDBD>): <#FFCA28>%renderers%'
+renderer-list-empty: '%prefix%<#BDBDBD>No renderers exist. Use <#FFCA28>/%label% create <id> <text><#BDBDBD>.'
+renderer-teleported: '%prefix%<#00E676>Teleported to <#FFCA28>%id%<#00E676>.'
+world-unavailable: '%prefix%<#FF5252>The world <#FFCA28>%world% <#FF5252>is not currently loaded.'
+renderer-moved: '%prefix%<#00E676>Moved <#FFCA28>%id% <#00E676>to your location.'
+renderer-size: '%prefix%<#00E676>Set <#FFCA28>%id% <#00E676>scale to <#29B6F6>%size%<#00E676>.'
+renderer-text: '%prefix%<#00E676>Updated the text for <#FFCA28>%id%<#00E676>.'
+renderer-font: '%prefix%<#00E676>Set <#FFCA28>%id% <#00E676>font to <#29B6F6>%font% %style% %size%<#00E676>.'
+renderer-particle: '%prefix%<#00E676>Set <#FFCA28>%id% <#00E676>particle to <#29B6F6>%particle%<#00E676>.'
+renderer-enabled: '%prefix%<#00E676>Enabled <#FFCA28>%id%<#00E676>.'
+renderer-disabled: '%prefix%<#BDBDBD>Disabled <#FFCA28>%id%<#BDBDBD>.'
+renderer-inverted: '%prefix%<#00E676>Set <#FFCA28>%id% <#00E676>inverted mode to <#29B6F6>%inverted%<#00E676>.'
+renderer-rotated: '%prefix%<#00E676>Set <#FFCA28>%id% <#00E676>rotation on <#29B6F6>%axis% <#00E676>to <#29B6F6>%angle%°<#00E676>.'
+invalid-number: '%prefix%<#FF5252>%value% <#BDBDBD>is not a valid number.'
+invalid-size: '%prefix%<#FF5252>Scale must be greater than 0 and at most 10.'
+text-too-long: '%prefix%<#FF5252>Renderer text may contain at most <#FFCA28>%max% <#FF5252>characters.'
+invalid-font: '%prefix%<#FF5252>Font style must be <#FFCA28>PLAIN<#FF5252>, <#FFCA28>BOLD<#FF5252>, <#FFCA28>ITALIC<#FF5252>, or <#FFCA28>BOLD_ITALIC<#FF5252>; size must be 4-128.'
+invalid-axis: '%prefix%<#FF5252>Axis must be <#FFCA28>x<#FF5252>, <#FFCA28>y<#FF5252>, or <#FFCA28>z<#FF5252>.'
+invalid-particle: '%prefix%<#FF5252>%particle% <#BDBDBD>is not a data-free particle supported by ParticleText.'
+reloaded: '%prefix%<#00E676>Reloaded settings, messages, renderer data, PlaceholderAPI text, menu values, and the render task.'
+
+help:
+  - '<#37474F><st>                                                                </st>'
+  - '<gradient:#00E5FF:#7C4DFF><bold>ParticleText Commands</bold></gradient>'
+  - '<#FFCA28>/%label% create <id> <text> <#37474F>- <#BDBDBD>Create with cached defaults'
+  - '<#FFCA28>/%label% delete <id> <#37474F>- <#BDBDBD>Delete a renderer'
+  - '<#FFCA28>/%label% list <#37474F>- <#BDBDBD>List renderers'
+  - '<#FFCA28>/%label% menu <#37474F>- <#BDBDBD>Open the renderer menu'
+  - '<#FFCA28>/%label% teleport|tphere <id> <#37474F>- <#BDBDBD>Move yourself or the renderer'
+  - '<#FFCA28>/%label% text <id> <text> <#37474F>- <#BDBDBD>Change displayed text'
+  - '<#FFCA28>/%label% setsize <id> <scale> <#37474F>- <#BDBDBD>Change scale'
+  - '<#FFCA28>/%label% font <id> <name> <style> <size> <#37474F>- <#BDBDBD>Change font'
+  - '<#FFCA28>/%label% particle <id> <particle> <#37474F>- <#BDBDBD>Change particle'
+  - '<#FFCA28>/%label% rotate <id> <x|y|z> <angle> <#37474F>- <#BDBDBD>Rotate text'
+  - '<#FFCA28>/%label% enabled <id> <true|false> <#37474F>- <#BDBDBD>Toggle rendering'
+  - '<#FFCA28>/%label% inverted <id> <true|false> <#37474F>- <#BDBDBD>Toggle foreground/background pixels'
+  - '<#FFCA28>/%label% reload <#37474F>- <#BDBDBD>Reload every cached file'
+  - '<#37474F><st>                                                                </st>'
+
+menu:
+  renderer-name: '<#FFCA28><bold>%id%</bold>'
+  renderer-lore:
+    - '<#BDBDBD>Text: <#FFFFFF>%text%'
+    - '<#BDBDBD>Particle: <#29B6F6>%particle%'
+    - '<#BDBDBD>Scale: <#29B6F6>%scale%'
+    - '<#BDBDBD>Inverted: <#29B6F6>%inverted%'
+    - '<#BDBDBD>Font: <#29B6F6>%font% %font_size%'
+    - '<#BDBDBD>Status: %status%'
+    - ''
+    - '<#00E5FF>LEFT-CLICK <#BDBDBD>to teleport'
+    - '<#7C4DFF>RIGHT-CLICK <#BDBDBD>to toggle'
+  status-enabled: '<#00E676>Enabled'
+  status-disabled: '<#FF5252>Disabled'
+  previous-page: '<#00E5FF><bold>Previous Page</bold>'
+  next-page: '<#00E5FF><bold>Next Page</bold>'
+  empty-name: '<#FF5252><bold>No Renderers</bold>'
+  empty-lore:
+    - '<#BDBDBD>Create one with:'
+    - '<#FFCA28>/pt create <id> <text>'

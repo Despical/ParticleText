@@ -1,11 +1,14 @@
 name: ParticleText
-author: Despical
 version: ${version}
-api-version: 1.13
+description: Render customizable text with Minecraft particles.
+author: Despical
+website: https://github.com/Despical/ParticleText
+prefix: ParticleText
+api-version: '26.2'
 main: dev.despical.particletext.ParticleTextPlugin
-description: Show any text using Minecraft particles.
 
 softdepend:
+  - PlaceholderAPI
   - Multiverse-Core
   - SlimeWorldManager
   - SlimeWorldPlugin
@@ -14,20 +17,63 @@ softdepend:
   - WorldGuard
 
 permissions:
-  pt.*:
+  particletext.*:
+    description: Grants access to all ParticleText commands and features.
     default: op
     children:
-      pt.create: true
-      pt.delete: true
-      pt.list: true
-      pt.tp: true
-      pt.tphere: true
-      pt.particle: true
-      pt.enabled: true
-      pt.font: true
-      pt.reload: true
-      pt.help: true
-      pt.setsize: true
-      pt.rotate: true
-      pt.version: true
-      pt.tabcompleter: true
+      particletext.admin: true
+
+  particletext.admin:
+    description: Grants access to all ParticleText administrative commands.
+    default: op
+    children:
+      particletext.command.create: true
+      particletext.command.delete: true
+      particletext.command.edit: true
+      particletext.command.list: true
+      particletext.command.menu: true
+      particletext.command.teleport: true
+      particletext.command.reload: true
+      particletext.command.help: true
+      particletext.command.version: true
+      particletext.command.tabcomplete: true
+
+  particletext.command.create:
+    description: Allows creating particle text renderers at the player's location.
+    default: op
+
+  particletext.command.delete:
+    description: Allows permanently deleting existing particle text renderers.
+    default: op
+
+  particletext.command.edit:
+    description: Allows changing renderer text, scale, font, particle, rotation, and state.
+    default: op
+
+  particletext.command.list:
+    description: Allows listing every configured particle text renderer.
+    default: op
+
+  particletext.command.menu:
+    description: Allows opening the interactive particle text renderer menu.
+    default: op
+
+  particletext.command.teleport:
+    description: Allows teleporting to renderers and moving renderers to the player's location.
+    default: op
+
+  particletext.command.reload:
+    description: Allows reloading cached settings, messages, renderer data, and render tasks.
+    default: op
+
+  particletext.command.help:
+    description: Allows viewing the ParticleText command help menu.
+    default: op
+
+  particletext.command.version:
+    description: Allows viewing the installed ParticleText version.
+    default: true
+
+  particletext.command.tabcomplete:
+    description: Allows receiving standard tab completions for ParticleText commands.
+    default: op

@@ -47,7 +47,7 @@ permissions:
     default: op
 
   particletext.command.edit:
-    description: Allows changing renderer text, scale, font, particle, rotation, and state.
+    description: Allows changing renderer text, position, scale, font, particle, rotation, and state.
     default: op
 
   particletext.command.list:

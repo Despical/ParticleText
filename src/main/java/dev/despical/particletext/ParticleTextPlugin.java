@@ -1,98 +1,118 @@
 package dev.despical.particletext;
 
+import dev.despical.commandframework.CommandErrorMessage;
 import dev.despical.commandframework.CommandFramework;
-import dev.despical.commons.util.UpdateChecker;
-import dev.despical.particletext.command.ParticleCommands;
-import dev.despical.particletext.event.JoinQuitEvents;
-import dev.despical.particletext.handler.ChatManager;
-import dev.despical.particletext.particle.ParticleHandler;
-import dev.despical.particletext.particle.ParticleRenderer;
-import dev.despical.particletext.user.UserManager;
+import dev.despical.particletext.command.Arguments;
+import dev.despical.particletext.config.SettingsManager;
+import dev.despical.particletext.message.MessageService;
+import dev.despical.particletext.message.Var;
+import dev.despical.particletext.papi.ParticleTextExpansion;
+import dev.despical.particletext.papi.PlaceholderApiTextResolver;
+import dev.despical.particletext.papi.PlainTextResolver;
+import dev.despical.particletext.papi.TextResolver;
+import dev.despical.particletext.persistence.RendererRepository;
+import dev.despical.particletext.render.RendererService;
+import dev.despical.particletext.service.UpdateChecker;
+import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.logging.Level;
 import java.util.stream.Stream;
 
-/**
- * @author Despical
- * <p>
- * Created at 3.07.2023
- */
-public class ParticleTextPlugin extends JavaPlugin {
+@Getter
+public final class ParticleTextPlugin extends JavaPlugin {
 
-    private ChatManager chatManager;
+    private static ParticleTextPlugin instance;
+
+    private SettingsManager settingsManager;
+    private MessageService messages;
+    private RendererService rendererService;
     private CommandFramework commandFramework;
-    private ParticleHandler particleHandler;
-    private UserManager userManager;
 
     @Override
     public void onEnable() {
-        initializeClasses();
-        checkUpdate();
+        instance = this;
+        settingsManager = new SettingsManager(this);
 
-        getLogger().info("Initialization finished.");
-        getLogger().info("Join our Discord server: https://discord.gg/uXVU8jmtpU");
+        TextResolver textResolver = createTextResolver();
+        messages = new MessageService(this, textResolver);
+
+        RendererRepository repository = new RendererRepository(this);
+        rendererService = new RendererService(this, settingsManager, repository, textResolver);
+
+        registerCommands();
+        registerPlaceholderExpansion();
+
+        rendererService.start();
+
+        new Metrics(this, 18978);
+
+        if (settingsManager.current().updatesEnabled()) {
+            new UpdateChecker(this).check();
+        }
+
+        int rendererAmount = rendererService.all().size();
+        getLogger().log(Level.INFO, "ParticleText v{0} initialized with {1} renderer{2}.",
+            new Object[] { getPluginMeta().getVersion(), rendererAmount, rendererAmount > 1 ? "s" : ""});
     }
 
     @Override
     public void onDisable() {
-        particleHandler.getRenderers()
-            .values()
-            .stream()
-            .filter(Objects::nonNull)
-            .forEach(ParticleRenderer::stopRendering);
+        if (rendererService != null) {
+            rendererService.stop();
+        }
+
+        instance = null;
     }
 
-    private void initializeClasses() {
-        createFiles();
+    public void reloadPlugin() {
+        settingsManager.reload();
+        messages.reload();
+        rendererService.reload();
+    }
 
-        chatManager = new ChatManager(this);
+    private TextResolver createTextResolver() {
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            return new PlaceholderApiTextResolver();
+        }
+
+        return new PlainTextResolver();
+    }
+
+    private void registerCommands() {
         commandFramework = new CommandFramework(this);
-        particleHandler = new ParticleHandler(this);
-        userManager = new UserManager(this);
+        commandFramework.setDefaultArguments(Arguments::new);
+        commandFramework.registerAllInPackage("dev.despical.particletext.command");
 
-        new ParticleCommands(this);
+        Stream.of(CommandErrorMessage.SHORT_ARG_SIZE, CommandErrorMessage.LONG_ARG_SIZE).forEach(error ->
+            error.setHandler((command, arguments) -> {
+                messages.send(arguments.getSender(), "correct-usage",
+                    Var.of("%usage%", command.usage().replace("%label%", arguments.getLabel())));
+                return true;
+            }));
 
-        new JoinQuitEvents(this);
-        new Metrics(this, 18978);
+        CommandErrorMessage.ONLY_BY_PLAYERS.setHandler((_, arguments) -> {
+            messages.send(arguments.getSender(), "player-only");
+            return true;
+        });
     }
 
-    private void createFiles() {
-        saveDefaultConfig();
+    private void registerPlaceholderExpansion() {
+        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new ParticleTextExpansion(this).register();
 
-        Stream.of("messages", "renderers")
-            .map(fileName -> new File(getDataFolder(), fileName + ".yml"))
-            .filter(Predicate.not(File::exists))
-            .forEach(file -> saveResource(file.getName(), false));
-    }
-
-    @NotNull
-    public ChatManager getChatManager() {
-        return chatManager;
-    }
-
-    @NotNull
-    public CommandFramework getCommandFramework() {
-        return commandFramework;
+            getLogger().info("PlaceholderAPI integration enabled.");
+        }
     }
 
     @NotNull
-    public ParticleHandler getParticleHandler() {
-        return particleHandler;
-    }
+    public static ParticleTextPlugin getInstance() {
+        if (instance == null) {
+            throw new IllegalStateException("ParticleText is not enabled");
+        }
 
-    @NotNull
-    public UserManager getUserManager() {
-        return userManager;
-    }
-
-    private void checkUpdate() {
-        if (!getConfig().getBoolean("Updates-Enabled", true)) return;
-
-        UpdateChecker.init(this, 110996).onNewUpdate(result -> getLogger().info("Found a new version available: v" + result.getNewestVersion()));
+        return instance;
     }
 }

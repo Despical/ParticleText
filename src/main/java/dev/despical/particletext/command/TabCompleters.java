@@ -30,7 +30,7 @@ public final class TabCompleters {
 
         String command = arguments.getArgument(0, "").toLowerCase();
 
-        if (length == 2 && List.of("delete", "teleport", "tphere", "text", "setsize", "font",
+        if (length == 2 && List.of("delete", "teleport", "tphere", "move", "text", "setsize", "font",
             "particle", "enabled", "inverted", "rotate").contains(command)) {
             return helper.copyMatches(1, plugin.getRendererService().all().stream()
                 .map(RendererData::id)
@@ -47,6 +47,16 @@ public final class TabCompleters {
 
         if (length == 3 && command.equals("rotate")) {
             return helper.copyMatches(2, List.of("x", "y", "z"));
+        }
+
+        if (length == 3 && command.equals("move")) {
+            return helper.copyMatches(2, Arrays.stream(MoveDirection.values())
+                .map(MoveDirection::displayName)
+                .toList());
+        }
+
+        if (length == 4 && command.equals("move")) {
+            return helper.copyMatches(3, List.of("0.1", "0.25", "0.5", "1"));
         }
 
         if (length == 4 && command.equals("font")) {
@@ -68,8 +78,8 @@ public final class TabCompleters {
         add(arguments, commands, "particletext.command.list", "list");
         add(arguments, commands, "particletext.command.menu", "menu");
         add(arguments, commands, "particletext.command.teleport", "teleport", "tphere");
-        add(arguments, commands, "particletext.command.edit", "text", "setsize", "font", "particle",
-            "enabled", "inverted", "rotate");
+        add(arguments, commands, "particletext.command.edit", "move", "text", "setsize", "font",
+            "particle", "enabled", "inverted", "rotate");
         add(arguments, commands, "particletext.command.reload", "reload");
         add(arguments, commands, "particletext.command.help", "help");
         add(arguments, commands, "particletext.command.version", "version");

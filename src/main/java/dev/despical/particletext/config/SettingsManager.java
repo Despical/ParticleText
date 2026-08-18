@@ -7,10 +7,14 @@ import dev.despical.particletext.model.ParticleSupport;
 import lombok.Getter;
 import lombok.experimental.Accessors;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Particle;
+import org.bukkit.Registry;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.awt.Font;
+import java.util.Locale;
 
 public final class SettingsManager {
 
@@ -22,6 +26,7 @@ public final class SettingsManager {
 
     public SettingsManager(ParticleTextPlugin plugin) {
         this.plugin = plugin;
+        this.plugin.saveDefaultConfig();
         this.reload();
     }
 
@@ -49,13 +54,19 @@ public final class SettingsManager {
         );
 
         PluginSettings.MenuSettings menu = new PluginSettings.MenuSettings(
-            config.getString("menu.title", "<#00E5FF><bold>ParticleText</bold>"),
-            Math.clamp(config.getInt("menu.rows", 6), 2, 6),
+            config.getString("menu.title", "<gradient:#00E5FF:#7C4DFF><bold>Particle Text</bold></gradient> <#37474F>»"),
+            Math.clamp(config.getInt("menu.rows", 6), 3, 6),
             material(config, "menu.enabled-material", Material.LIME_DYE),
             material(config, "menu.disabled-material", Material.GRAY_DYE),
             material(config, "menu.previous-page-material", Material.ARROW),
             material(config, "menu.next-page-material", Material.ARROW),
-            material(config, "menu.empty-material", Material.BARRIER)
+            material(config, "menu.empty-material", Material.BARRIER),
+            material(config, "menu.decoration-blocks.material", Material.GRAY_STAINED_GLASS_PANE),
+            sound(config, "menu.sounds.open", Sound.UI_BUTTON_CLICK),
+            sound(config, "menu.sounds.page-change", Sound.UI_BUTTON_CLICK),
+            sound(config, "menu.sounds.teleport", Sound.ENTITY_ENDERMAN_TELEPORT),
+            sound(config, "menu.sounds.enabled", Sound.BLOCK_NOTE_BLOCK_PLING),
+            sound(config, "menu.sounds.disabled", Sound.BLOCK_NOTE_BLOCK_BASS)
         );
 
         current = new PluginSettings(
@@ -77,5 +88,13 @@ public final class SettingsManager {
         Material material = Material.matchMaterial(config.getString(path, fallback.name()));
 
         return material == null || material.isAir() ? fallback : material;
+    }
+
+    private Sound sound(FileConfiguration config, String path, Sound fallback) {
+        String configured = config.getString(path, Registry.SOUNDS.getKeyOrThrow(fallback).asString());
+
+        NamespacedKey key = NamespacedKey.fromString(configured.toLowerCase(Locale.ROOT));
+        Sound sound = key == null ? null : Registry.SOUNDS.get(key);
+        return sound == null ? fallback : sound;
     }
 }

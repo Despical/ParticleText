@@ -3,6 +3,7 @@ package dev.despical.particletext.config;
 import dev.despical.particletext.model.FontSpec;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 
 public record PluginSettings(
     boolean updatesEnabled,
@@ -32,7 +33,13 @@ public record PluginSettings(
         Material disabledMaterial,
         Material previousPageMaterial,
         Material nextPageMaterial,
-        Material emptyMaterial
+        Material emptyMaterial,
+        Material decorationMaterial,
+        Sound openSound,
+        Sound pageChangeSound,
+        Sound teleportSound,
+        Sound enabledSound,
+        Sound disabledSound
     ) {
     }
 }

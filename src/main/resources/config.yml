@@ -81,10 +81,10 @@ defaults:
 menu:
 
   # Sets the MiniMessage title displayed at the top of the renderer menu.
-  # Hex colors, gradients, decorations, and other supported MiniMessage tags may be used.
-  title: '<gradient:#00E5FF:#7C4DFF><bold>ParticleText Renderers</bold></gradient>'
+  # This matches the configured chat prefix for consistent branding.
+  title: '<gradient:#00E5FF:#7C4DFF><bold>Particle Text</bold></gradient> <#37474F>»'
 
-  # Sets the menu height in inventory rows; accepted values are 2 through 6.
+  # Sets the menu height in inventory rows; accepted values are 3 through 6.
   rows: 6
 
   # Sets the Bukkit material used for enabled renderer entries.
@@ -104,6 +104,22 @@ menu:
   # Sets the Bukkit material shown when no renderers exist.
   # Invalid or air materials fall back to BARRIER.
   empty-material: BARRIER
+
+  # Configures the decorative border surrounding the renderer entries.
+  decoration-blocks:
+
+    # Sets the Bukkit material used to fill the menu border.
+    # Invalid or air materials fall back to GRAY_STAINED_GLASS_PANE.
+    material: GRAY_STAINED_GLASS_PANE
+
+  # Configures the Bukkit sounds used for menu interaction feedback.
+  # Use vanilla sound keys; invalid values fall back to the defaults shown below.
+  sounds:
+    open: ui.button.click
+    page-change: ui.button.click
+    teleport: entity.enderman.teleport
+    enabled: block.note_block.pling
+    disabled: block.note_block.bass
 
 
 # If enabled, the plugin checks for newer releases on startup.

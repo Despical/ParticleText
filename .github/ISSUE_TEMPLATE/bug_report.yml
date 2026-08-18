@@ -1,0 +1,56 @@
+name: Bug Report
+description: Report unexpected Particle Text behavior.
+title: "[BUG] "
+labels: ["bug"]
+assignees:
+  - Despical
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for taking the time to report a Particle Text bug.
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: Describe the actual and expected behavior.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Run /pt ...
+        2. Change ...
+        3. Observe ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Particle Text version
+      placeholder: e.g. 2.0.0
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Server environment
+      description: Include Paper/Purpur, Minecraft, Java, and PlaceholderAPI versions.
+      placeholder: Paper 26.2, Java 25, PlaceholderAPI 2.12.3
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant log output
+      render: log
+  - type: checkboxes
+    id: validation
+    attributes:
+      label: Validation
+      options:
+        - label: I reproduced this on the latest Particle Text version.
+          required: true
+        - label: I checked for an existing issue describing the same problem.
+          required: true

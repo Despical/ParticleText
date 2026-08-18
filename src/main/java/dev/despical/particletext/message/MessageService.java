@@ -14,6 +14,8 @@ import java.util.Objects;
 
 public final class MessageService {
 
+    private static final String CENTER_PREFIX = "%center%";
+
     private final ParticleTextPlugin plugin;
     private final TextResolver textResolver;
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
@@ -41,7 +43,7 @@ public final class MessageService {
 
     public void sendList(CommandSender recipient, String path, Var... variables) {
         configuration.getStringList(path).stream()
-            .map(line -> parse(recipient instanceof Player player ? player : null, line, variables))
+            .map(line -> parseListLine(recipient instanceof Player player ? player : null, line, variables))
             .forEach(recipient::sendMessage);
     }
 
@@ -64,6 +66,13 @@ public final class MessageService {
 
     public String raw(String path) {
         return configuration.getString(path, "");
+    }
+
+    private Component parseListLine(Player player, String line, Var... variables) {
+        boolean centered = line.startsWith(CENTER_PREFIX);
+        Component component = parse(player, centered ? line.substring(CENTER_PREFIX.length()) : line, variables);
+
+        return centered ? ComponentCenterer.center(component) : component;
     }
 
     private String replace(String raw, Var... variables) {

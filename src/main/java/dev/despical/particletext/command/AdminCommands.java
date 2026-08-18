@@ -5,6 +5,7 @@ import dev.despical.particletext.message.Var;
 import dev.despical.particletext.model.FontSpec;
 import dev.despical.particletext.model.FontStyle;
 import dev.despical.particletext.model.ParticleSupport;
+import dev.despical.particletext.model.RendererData;
 import org.bukkit.entity.Player;
 
 import java.util.Locale;
@@ -86,6 +87,72 @@ public final class AdminCommands extends CommandCategory {
         }
 
         arguments.sendConfigured("renderer-moved", Var.of("%id%", id));
+    }
+
+    @Command(
+        name = "pt.move",
+        aliases = "particletext.move",
+        permission = "particletext.command.edit",
+        usage = "/%label% move <id> <forward|backward|left|right|up|down> [amount]",
+        min = 2,
+        max = 3,
+        senderType = Command.SenderType.PLAYER
+    )
+    public void move(Arguments arguments) {
+        Optional<MoveDirection> direction = MoveDirection.find(arguments.getArgument(1));
+
+        if (direction.isEmpty()) {
+            arguments.sendConfigured("invalid-direction");
+            return;
+        }
+
+        double amount = 0.25;
+
+        if (arguments.getLength() == 3) {
+            String rawAmount = arguments.getArgument(2);
+
+            if (!arguments.isFloatingDecimal(2)) {
+                arguments.sendConfigured("invalid-number", Var.of("%value%", rawAmount));
+                return;
+            }
+
+            amount = arguments.getArgumentAsDouble(2);
+
+            if (!Double.isFinite(amount)) {
+                arguments.sendConfigured("invalid-number", Var.of("%value%", rawAmount));
+                return;
+            }
+        }
+
+        if (amount < 0.01 || amount > 100.0) {
+            arguments.sendConfigured("invalid-move-amount");
+            return;
+        }
+
+        String id = normalizeId(arguments.getFirst());
+        Optional<RendererData> renderer = renderers.find(id);
+
+        if (renderer.isEmpty()) {
+            sendRendererNotFound(arguments, id);
+            return;
+        }
+
+        var location = renderer.get().location().toBukkitLocation();
+
+        if (location == null) {
+            arguments.sendConfigured("world-unavailable", Var.of("%world%", renderer.get().location().world()));
+            return;
+        }
+
+        Player player = arguments.getSender();
+        MoveDirection moveDirection = direction.get();
+        MoveDirection.Offset offset = moveDirection.offset(player.getLocation().getYaw(), amount);
+        location.add(offset.x(), offset.y(), offset.z());
+        renderers.updateLocation(id, location);
+
+        arguments.sendConfigured("renderer-shifted", Var.of("%id%", id),
+            Var.of("%direction%", moveDirection.displayName()),
+            Var.of("%amount%", String.format(Locale.US, "%.2f", amount)));
     }
 
     @Command(

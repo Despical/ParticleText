@@ -1,0 +1,33 @@
+name: Feature Request
+description: Suggest an improvement for Particle Text.
+title: "[FEATURE] "
+labels: ["enhancement"]
+assignees:
+  - Despical
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem or use case
+      description: Explain the limitation or server use case.
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed behavior
+      description: Describe the command, configuration, placeholder, menu, or rendering behavior you want.
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Add examples, screenshots, or alternatives considered.
+  - type: checkboxes
+    id: contribution
+    attributes:
+      label: Contribution
+      options:
+        - label: I am willing to help implement this feature.
+          required: false

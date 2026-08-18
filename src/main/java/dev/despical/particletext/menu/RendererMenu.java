@@ -11,6 +11,7 @@ import dev.despical.particletext.message.Var;
 import dev.despical.particletext.model.RendererData;
 import dev.despical.particletext.render.RendererService;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -31,24 +32,42 @@ public final class RendererMenu {
     }
 
     public void open(Player player) {
+        open(player, true);
+    }
+
+    private void open(Player player, boolean playOpenSound) {
         PluginSettings.MenuSettings settings = plugin.getSettingsManager().current().menu();
         Gui gui = new Gui(plugin, settings.rows(), messages.parse(player, settings.title()));
 
         gui.setOnGlobalClick(event -> event.setCancelled(true));
         gui.setOnDrag(event -> event.setCancelled(true));
 
-        PaginatedPane pages = new PaginatedPane(0, 0, 9, settings.rows() - 1);
+        StaticPane decoration = new StaticPane(0, 0, 9, settings.rows());
+
+        for (int row = 0; row < settings.rows(); row++) {
+            for (int column = 0; column < 9; column++) {
+                if (row == 0 || row == settings.rows() - 1 || column == 0 || column == 8) {
+                    decoration.addItem(decorationItem(player, settings), column, row);
+                }
+            }
+        }
+
+        gui.addPane(decoration);
+
+        PaginatedPane pages = new PaginatedPane(1, 1, 7, settings.rows() - 2);
         List<GuiItem> items = rendererService.all().stream()
             .map(data -> rendererItem(player, data, settings))
             .toList();
 
         if (items.isEmpty()) {
-            items = List.of(emptyItem(player, settings));
+            StaticPane empty = new StaticPane(1, 1, 7, settings.rows() - 2);
+            empty.addItem(emptyItem(player, settings), 3, (settings.rows() - 3) / 2);
+            gui.addPane(empty);
+        } else {
+            pages.populateWithGuiItems(items);
+            pages.setPage(0);
+            gui.addPane(pages);
         }
-
-        pages.populateWithGuiItems(items);
-        pages.setPage(0);
-        gui.addPane(pages);
 
         StaticPane navigation = new StaticPane(0, settings.rows() - 1, 9, 1);
 
@@ -58,17 +77,21 @@ public final class RendererMenu {
                     pages.setPage(pages.getPage() - 1);
                     gui.update();
                 }
-            }), 0, 0);
+            }, settings.pageChangeSound(), 0.8f), 0, 0);
             navigation.addItem(navigationItem(player, settings.nextPageMaterial(), "menu.next-page", () -> {
                 if (pages.getPage() + 1 < pages.getPages()) {
                     pages.setPage(pages.getPage() + 1);
                     gui.update();
                 }
-            }), 8, 0);
+            }, settings.pageChangeSound(), 1.5f), 8, 0);
         }
 
         gui.addPane(navigation);
         gui.show(player);
+
+        if (playOpenSound) {
+            playSound(player, settings.openSound(), 1.5f);
+        }
     }
 
     private GuiItem rendererItem(Player viewer, RendererData data, PluginSettings.MenuSettings settings) {
@@ -84,10 +107,13 @@ public final class RendererMenu {
             Player player = (Player) event.getWhoClicked();
 
             if (event.isRightClick()) {
-                rendererService.toggleEnabled(data.id()).ifPresent(updated ->
+                rendererService.toggleEnabled(data.id()).ifPresent(updated -> {
                     messages.send(player, updated.enabled() ? "renderer-enabled" : "renderer-disabled",
-                        Var.of("%id%", updated.id())));
-                plugin.getServer().getScheduler().runTask(plugin, () -> open(player));
+                        Var.of("%id%", updated.id()));
+                    playSound(player, updated.enabled() ? settings.enabledSound() : settings.disabledSound(),
+                        updated.enabled() ? 1.6f : 0.7f);
+                    plugin.getServer().getScheduler().runTask(plugin, () -> open(player, false));
+                });
                 return;
             }
 
@@ -95,24 +121,31 @@ public final class RendererMenu {
 
             if (location == null) {
                 messages.send(player, "world-unavailable", Var.of("%world%", data.location().world()));
+                playSound(player, settings.disabledSound(), 0.7f);
                 return;
             }
 
             player.closeInventory();
             player.teleport(location);
+            playSound(player, settings.teleportSound(), 1f);
 
             messages.send(player, "renderer-teleported", Var.of("%id%", data.id()));
         });
     }
 
-    private GuiItem navigationItem(Player player, org.bukkit.Material material, String messagePath, Runnable action) {
+    private GuiItem navigationItem(Player player, org.bukkit.Material material, String messagePath, Runnable action,
+                                   Sound sound, float pitch) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
         meta.displayName(messages.parse(player, messages.raw(messagePath)));
+        meta.lore(messages.parseList(player, messagePath + "-lore"));
         item.setItemMeta(meta);
 
-        return GuiItem.of(item, event -> action.run());
+        return GuiItem.of(item, event -> {
+            playSound(player, sound, pitch);
+            action.run();
+        });
     }
 
     private GuiItem emptyItem(Player player, PluginSettings.MenuSettings settings) {
@@ -123,7 +156,21 @@ public final class RendererMenu {
         meta.lore(messages.parseList(player, "menu.empty-lore"));
         item.setItemMeta(meta);
 
+        return GuiItem.of(item, event -> playSound(player, settings.disabledSound(), 0.7f));
+    }
+
+    private GuiItem decorationItem(Player player, PluginSettings.MenuSettings settings) {
+        ItemStack item = new ItemStack(settings.decorationMaterial());
+        ItemMeta meta = item.getItemMeta();
+
+        meta.displayName(messages.parse(player, messages.raw("menu.decoration-name")));
+        item.setItemMeta(meta);
+
         return GuiItem.of(item);
+    }
+
+    private void playSound(Player player, Sound sound, float pitch) {
+        player.playSound(player.getLocation(), sound, 1f, pitch);
     }
 
     private Var[] variables(RendererData data) {

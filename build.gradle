@@ -13,7 +13,7 @@ java {
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:26.2.build.120-stable'
+    compileOnly 'io.papermc.paper:paper-api:26.2.build.121-stable'
     compileOnly 'me.clip:placeholderapi:2.12.3'
     compileOnly 'org.projectlombok:lombok:1.18.46'
 

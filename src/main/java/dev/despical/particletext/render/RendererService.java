@@ -142,11 +142,8 @@ public final class RendererService {
 
         return all().stream()
             .filter(data -> data.location().world().equals(player.getWorld().getName()))
-            .min(Comparator.comparingDouble(data -> {
-                Location location = data.location().toBukkitLocation();
-
-                return location == null ? Double.MAX_VALUE : location.distanceSquared(playerLocation);
-            }));
+            .filter(data -> data.location().toBukkitLocation() != null)
+            .min(Comparator.comparingDouble(data -> data.location().toBukkitLocation().distanceSquared(playerLocation)));
     }
 
     private Optional<RendererData> update(String id, UnaryOperator<RendererData> updater) {

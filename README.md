@@ -101,7 +101,7 @@ On Windows:
 gradlew.bat build
 ```
 
-The packaged plugin is created at `build/libs/particle-text-2.0.0.jar`.
+The packaged plugin is created at `build/libs/particle-text-2.0.1.jar`.
 
 ---
 

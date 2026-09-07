@@ -18,4 +18,10 @@ class VersionComparatorTest {
         assertFalse(VersionComparator.isNewer("1.2.1", "2.0.0"));
         assertFalse(VersionComparator.isNewer("2.0.0", "2.0"));
     }
+
+    @Test
+    void recognizesAStableReleaseAfterAPreRelease() {
+        assertTrue(VersionComparator.isNewer("2.0.1", "2.0.1-beta.1"));
+        assertFalse(VersionComparator.isNewer("2.0.1-beta.2", "2.0.1"));
+    }
 }

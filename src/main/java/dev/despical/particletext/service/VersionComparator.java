@@ -19,11 +19,18 @@ public class VersionComparator {
             }
         }
 
-        return false;
+        return !isPreRelease(candidate) && isPreRelease(current);
+    }
+
+    private static boolean isPreRelease(String version) {
+        String normalized = version == null ? "" : version.strip().replaceFirst("^[vV]", "");
+        int separator = normalized.indexOf('-');
+
+        return separator >= 0 && separator < normalized.length() - 1;
     }
 
     private static int[] parts(String version) {
-        String normalized = version == null ? "" : version.strip().replaceFirst("^[vV]", "");
+        String normalized = version == null ? "" : version.strip().replaceFirst("^[vV]", "").split("-", 2)[0];
         String[] tokens = normalized.split("[.-]");
         int[] parts = new int[tokens.length];
 

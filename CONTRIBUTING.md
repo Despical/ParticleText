@@ -1,30 +1,30 @@
 # Contributing
 
-Before making a substantial change, open an [issue](https://github.com/Despical/ParticleText/issues/new) and discuss the intended behavior with the repository owner.
+Discuss substantial changes in a [GitHub issue](https://github.com/Despical/ParticleText/issues)
+before submitting a pull request. Follow the [Code of Conduct](CODE_OF_CONDUCT.md).
 
-Please follow the project [Code of Conduct](CODE_OF_CONDUCT.md) in all interactions.
+## Development
 
-## Pull request process
+Use Java 25 and the checked-in Gradle wrapper. Run:
 
-- Use spaces instead of tabs and respect the existing code style and package boundaries.
-- Keep changes focused; do not reformat or reorganize unrelated files.
-- Do not change release version numbers unless the pull request specifically requires it.
-- Preserve the cached configuration model and keep Bukkit API access on the server thread.
-- Document new commands, permissions, configuration keys, and placeholders.
-- Run `./gradlew build` successfully before submitting the pull request.
-- Confirm the shaded JAR is produced under `build/libs/`.
+```shell
+./gradlew clean build javadocJar --no-daemon --console=plain
+```
 
-If you are looking for work, review the [open issues](https://github.com/Despical/ParticleText/issues) first to avoid duplicate efforts.
+Keep four-space Java indentation, explicit braces, UTF-8, LF endings, GPL headers,
+and the existing Javadoc conventions. Keep services focused on one responsibility.
+Add configurable player-facing text to `messages.yml`; document every new setting
+and its bounds in `config.yml`. Insert user values through unparsed placeholders.
 
-## Bug reports
+## Runtime behavior
 
-- Search for an existing report before opening a new one.
-- Reproduce the issue on the latest Particle Text version.
-- Include the Particle Text, Server, Minecraft, Java, and PlaceholderAPI versions when relevant.
-- Include steps to reproduce and the smallest useful server log excerpt.
-- Use the issue tracker for code defects, not general server administration support.
+Bukkit calls, renderer mutations, font rasterization, and menus run on the server
+thread. Update checks use asynchronous HTTP requests. Keep saved text records compatible and
+preserve existing renderer state when loading or persistence fails.
 
-## Additional resources
+Include meaningful regression tests for behavior changes. For integration changes,
+check a separate Paper server with both optional PlaceholderAPI states when applicable.
+Describe what was checked and any remaining runtime or visual limitation in the PR.
 
-- [GitHub pull request documentation](https://docs.github.com/en/pull-requests)
-- [Paper plugin development documentation](https://docs.papermc.io/paper/dev/)
+Do not change versions, reformat unrelated files, or include generated builds,
+server worlds, credentials, or local IDE state.

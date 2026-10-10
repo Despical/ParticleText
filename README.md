@@ -2,115 +2,128 @@
 
 [![CI](https://github.com/Despical/ParticleText/actions/workflows/build.yml/badge.svg)](https://github.com/Despical/ParticleText/actions/workflows/build.yml)
 ![Java 25](https://img.shields.io/badge/Java-25-007396.svg)
-![Gradle](https://img.shields.io/badge/Gradle-9.7.0-079ec0?logo=gradle&logoColor=white)
-![Minecraft](https://img.shields.io/badge/Minecraft-26.2-62b47a)
+![Paper](https://img.shields.io/badge/Paper-1.21.11%2B-62b47a)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
-Particle Text renders persistent, customizable text using native Minecraft particles. It is built for modern Paper servers and keeps rendering work bounded through cached point clouds, distance filtering, configurable sampling, and a single shared scheduler.
+![Particle Text cover](assets/particle-text-cover.png)
 
----
+Persistent particle text for Paper, created by **Despical**. Add a welcome sign,
+mark an entrance, or display live server information. Customize each renderer
+in game through commands, interactive chat cards, or an inventory menu.
 
 ## Features
 
-- Create and edit particle text without restarting the server.
-- Customize text, particle, scale, font, enabled state, position, and three-axis rotation.
-- Manage renderers through commands or an Inventory Framework menu.
-- Use Adventure MiniMessage and hex colors in every configurable message.
-- Resolve PlaceholderAPI placeholders inside renderer text and expose a native `particletext` expansion.
-- Cache configuration values and rebuild runtime state with `/pt reload`.
-- Limit particles by viewer distance, pixel sampling, and a per-renderer point cap.
-- Persist renderer data in a human-readable `renderers.yml` file.
+- Configurable font family, style, size, particle, spacing, and text inversion.
+- Per-renderer position, facing, three-axis rotation, and enabled state.
+- Aikar commands with typed Paper Brigadier arguments and permission-aware completion.
+- Paginated help and renderer lists, hover details, and management buttons.
+- A shared particle scheduler with viewer-distance filtering and a global packet budget.
+- Validated configuration snapshots and atomic renderer-file replacement.
+- Optional PlaceholderAPI text resolution and a native `particletext` expansion.
+- Clear error responses when a renderer already has the requested state or setting.
 
----
+## Installation
 
-## Requirements
-
-- Java 25
-- A Paper-compatible server
-- PlaceholderAPI (optional)
-
----
+Use **Java 25 or newer** and **Paper 1.21.11 or newer**. Put the shaded
+`particle-text-2.0.2.jar` in the server's `plugins` folder and restart.
+PlaceholderAPI is optional. The Java runtime must include `java.desktop`
+for font rasterization. Folia is not supported.
 
 ## Commands
 
-| Command | Description | Permission |
+`/particletext` is an alias of `/pt`. IDs use lowercase letters, digits,
+underscores, and hyphens, with a maximum of 32 characters.
+
+| Command | Description | Permission suffix |
 | --- | --- | --- |
-| `/pt create <id> <text>` | Create a renderer using cached defaults | `particletext.command.create` |
-| `/pt delete <id>` | Delete a renderer | `particletext.command.delete` |
-| `/pt list` | List renderer IDs | `particletext.command.list` |
-| `/pt menu` | Open the renderer management menu | `particletext.command.menu` |
-| `/pt teleport <id>` | Teleport to a renderer | `particletext.command.teleport` |
-| `/pt tphere <id>` | Move a renderer to your location | `particletext.command.teleport` |
-| `/pt text <id> <text>` | Change displayed text | `particletext.command.edit` |
-| `/pt setsize <id> <scale>` | Change renderer scale | `particletext.command.edit` |
-| `/pt font <id> <name> <style> <size>` | Change the AWT font | `particletext.command.edit` |
-| `/pt particle <id> <particle>` | Change the data-free particle type | `particletext.command.edit` |
-| `/pt enabled <id> <true\|false>` | Enable or disable rendering | `particletext.command.edit` |
-| `/pt inverted <id> <true\|false>` | Toggle foreground/background pixels | `particletext.command.edit` |
-| `/pt rotate <id> <x\|y\|z> <angle>` | Set an axis rotation | `particletext.command.edit` |
-| `/pt reload` | Reload all cached files and the render task | `particletext.command.reload` |
-| `/pt help` | Show command help | `particletext.command.help` |
-| `/pt version` | Show the installed version | `particletext.command.version` |
+| `/pt create <id> <text>` | Create text at your position | `create` |
+| `/pt delete <id>` | Delete a saved renderer | `delete` |
+| `/pt list [page]` | Browse saved renderers | `list` |
+| `/pt info <id>` | Show details and management buttons | `info` |
+| `/pt menu` | Open the inventory menu | `menu` |
+| `/pt teleport <id>` | Teleport to a renderer | `teleport` |
+| `/pt tphere <id>` | Move a renderer to your position | `teleport` |
+| `/pt move <id> <direction> [amount]` | Move relative to your facing | `edit` |
+| `/pt text <id> <text>` | Update the text | `edit` |
+| `/pt setsize <id> <scale>` | Set spacing between particle pixels | `edit` |
+| `/pt font <id> <name> <style> <size>` | Set the text font | `edit` |
+| `/pt fonts` | List installed font families | `edit` |
+| `/pt particle <id> <particle>` | Set a data-free particle | `edit` |
+| `/pt enabled <id> <true\|false>` | Show or hide a renderer | `edit` |
+| `/pt inverted <id> <true\|false>` | Invert text foreground/background | `edit` |
+| `/pt rotate <id> <x\|y\|z> <angle>` | Set an axis rotation in degrees | `edit` |
+| `/pt reload` | Validate and reload files | `reload` |
+| `/pt help [page]` | Show available commands | `help` |
+| `/pt version` | Show the installed version | `version` |
 
-`/particletext` is available as an alias. The `particletext.admin` permission grants every administrative permission.
+Permissions use `particletext.command.<suffix>`. `particletext.admin` grants all
+administrative commands; `particletext.*` includes it. Completion additionally
+uses `particletext.command.tabcomplete`. Menu teleport and toggle clicks check
+their own action permissions. Version is available to everyone by default.
 
----
+Directions are `forward`, `backward`, `left`, `right`, `up`, and `down`.
+Font styles are `PLAIN`, `BOLD`, `ITALIC`, and `BOLD_ITALIC`.
+Quote font names containing spaces.
+
+```text
+/pt create welcome Welcome to the server
+/pt font welcome "DejaVu Sans" BOLD 24
+/pt particle welcome END_ROD
+/pt move welcome up 1
+/pt rotate welcome y 45
+```
 
 ## Configuration
 
-- `config.yml` contains cached performance limits, renderer defaults, and menu settings.
-- `messages.yml` contains MiniMessage-compatible messages and menu text.
-- `renderers.yml` stores renderer-specific text, particle, font, transform, state, and location data.
+| File | Purpose |
+| --- | --- |
+| `config.yml` | Rendering budgets, defaults, chat pagination, menu materials and sounds |
+| `messages.yml` | MiniMessage chat, help, hover text, buttons, menu names and lore |
+| `renderers.yml` | Saved text, transform, font, particle, and state |
 
-Changes made directly to these files take effect after `/pt reload`. Existing renderers keep their own font, scale, particle, and state when defaults change; the defaults apply to newly created renderers.
+Run `/pt reload` after editing. Missing settings and message keys use bundled
+defaults in memory without overwriting your files. Invalid YAML, value types,
+out-of-range settings, or invalid renderer records reject the reload and keep
+the active settings, messages, and records. A successful reload rebuilds the
+text renderers from the validated snapshot.
 
----
+Existing text records remain compatible. Renderer-specific defaults are copied
+only at creation; changing defaults does not replace existing fonts or transforms.
+Use `%name%` or `<name>` for message variables. User input and PlaceholderAPI
+output are inserted as literal text; explicitly built chat actions retain their
+Adventure click and hover events. An empty message disables that output.
+
+The point cap applies to each renderer; the shared packet cap counts each point
+sent to each viewer. Under heavy load, renderer and point cursors rotate so the
+same text does not always lose its turn. An unloaded renderer world is skipped
+until it becomes available. Back up `renderers.yml` when moving servers.
 
 ## PlaceholderAPI
 
-Renderer text may contain installed PlaceholderAPI placeholders. Global placeholders are refreshed according to `performance.placeholder-refresh-ticks` and the point cloud is rebuilt only when the resolved text changes.
+Renderer text resolves global placeholders periodically. It is shared content,
+so it does not use a separate viewer context for each player.
 
-Particle Text provides:
-
-- `%particletext_total%`
-- `%particletext_enabled%`
-- `%particletext_disabled%`
-- `%particletext_nearest_id%`
-- `%particletext_nearest_text%`
-- `%particletext_nearest_distance%`
-- `%particletext_renderer:<id>:text%`
-- `%particletext_renderer:<id>:particle%`
-- `%particletext_renderer:<id>:scale%`
-- `%particletext_renderer:<id>:enabled%`
-- `%particletext_renderer:<id>:inverted%`
-- `%particletext_renderer:<id>:world%`
-
----
+| Placeholder | Result |
+| --- | --- |
+| `%particletext_total%` | Saved renderer count |
+| `%particletext_enabled%` | Enabled renderer count |
+| `%particletext_disabled%` | Disabled renderer count |
+| `%particletext_nearest_id%` | Nearest renderer ID in the player's world |
+| `%particletext_nearest_text%` | Nearest renderer's saved text |
+| `%particletext_nearest_distance%` | Distance to that renderer |
+| `%particletext_renderer:<id>:<field>%` | `text`, `particle`, `scale`, `enabled`, `inverted`, or `world` |
 
 ## Building
 
-Clone the repository and run:
-
-```bash
-./gradlew build
+```shell
+./gradlew clean build javadocJar --no-daemon --console=plain
 ```
 
-On Windows:
+On Windows use `gradlew.bat`. Build output includes the shaded plugin, a plain
+development JAR, and opt-in Javadocs. Install the shaded plugin JAR.
+The build uses Java 25, Gradle Groovy, Shadow, Aikar ACF, Adventure, and bStats;
+the management menu uses Despical's Inventory Framework.
 
-```cmd
-gradlew.bat build
-```
-
-The packaged plugin is created at `build/libs/particle-text-2.0.1.jar`.
-
----
-
-## Contributing and security
-
-Read [CONTRIBUTING.md](CONTRIBUTING.md) before opening a pull request and follow the [Code of Conduct](CODE_OF_CONDUCT.md). Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md).
-
----
-
-## License
-
-Particle Text is licensed under the [GNU General Public License v3.0](LICENSE).
+See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). Particle Text is licensed under
+[GPL-3.0-or-later](LICENSE).

@@ -16,24 +16,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package dev.despical.particletext.message;
-
 /**
- * Supplies one named value to a configured message template.
- * <p>
- * Names may use percent delimiters or plain MiniMessage tag names. Ordinary values are converted to
- * literal text by MessageService.
- * <p>
- * An explicitly constructed Adventure Component is the supported way to insert rich content such as
- * permission-aware action buttons or a configured status label.
+ * Configurable MiniMessage templates, literal value substitution, and interactive chat panels.
  *
  * @author Despical
- * <p>
- * Created at 10.10.2026
  */
-public record Var(String name, Object value) {
-
-    public static Var of(String name, Object value) {
-        return new Var(name, value);
-    }
-}
+package dev.despical.particletext.message;

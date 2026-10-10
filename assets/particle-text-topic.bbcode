@@ -1,0 +1,126 @@
+[font=Verdana][size=4]
+[center][img]https://hub.despical.dev/plugin-icons/particle-text-cover-b51159d27d53.png[/img]
+
+[size=7][b]Particle Text[/b][/size]
+[size=5][b]Give your world something to say.[/b][/size]
+
+[b]Custom fonts  ·  Particle styles  ·  Live server text[/b]
+Welcome players, mark an entrance, and make your server information part of the scenery.
+
+[url=https://docs.despical.dev/particle-text/][b]Explore the documentation[/b][/url]  ·  [url=https://github.com/Despical/ParticleText][b]Browse the source[/b][/url][/center]
+
+A welcome sign above your spawn. A label beside a portal. A message that changes with your server. [b]Particle Text turns ordinary text into persistent particle displays that fit the places players visit.[/b]
+
+Create a renderer where you stand, choose its font and particle, and adjust the result in game. Saved text, position and presentation remain available after a restart.
+
+[hr]
+
+[center][size=4][color=#7286df][b]01  /  FIND YOUR STYLE[/b][/color][/size]
+[size=6][b]Your words. Your server's character.[/b][/size][/center]
+
+[b]Choose the typography.[/b] Use the font families available to your server's Java environment. Choose PLAIN, BOLD, ITALIC or BOLD_ITALIC, then set the font size independently from particle spacing. Quote a font name when it contains spaces; [b]/pt fonts[/b] lists the families your server can use.
+
+[b]Pick the particles.[/b] Select a supported particle that does not require extra data, such as FLAME or END_ROD. Tune spacing, pixel sampling and point limits to balance the look and workload. Inverted mode draws the background pixels around your text.
+
+[code]/pt create welcome Welcome to the server
+/pt font welcome "SansSerif" BOLD 24
+/pt particle welcome END_ROD
+/pt setsize welcome 0.20[/code]
+
+The font command controls the rasterized letters. The scale controls the distance between particle points. Change either without recreating the renderer.
+
+[hr]
+
+[center][size=4][color=#7286df][b]02  /  FIT THE PLACE[/b][/color][/size]
+[size=6][b]A sign belongs where players will see it.[/b][/size][/center]
+
+Create text at your current location and facing. Shift it forward, backward, left, right, up or down relative to your view. Set rotation around the X, Y and Z axes to match an entrance, wall or floating display.
+
+[code]/pt move welcome up 1
+/pt rotate welcome y 45
+/pt tphere welcome[/code]
+
+[b]/pt teleport welcome[/b] takes you back to its saved location. An unloaded world receives a clear error instead of moving the saved renderer elsewhere.
+
+[hr]
+
+[center][size=4][color=#7286df][b]03  /  MAKE CHANGES IN GAME[/b][/color][/size]
+[size=6][b]Find it. Inspect it. Make it yours.[/b][/size][/center]
+
+Browse saved renderers with [b]/pt list[/b], hover for details and click through to a management card. [b]/pt info welcome[/b] shows the text, particle, font, spacing, rotation, location and current state. Chat actions let you teleport, start editing, enable or disable, and prepare a delete command.
+
+Prefer an inventory? [b]/pt menu[/b] opens a paginated renderer browser. Left-click to teleport and right-click to toggle the selected renderer. Each action checks its own permission.
+
+[code]/pt text welcome Welcome back to the server
+/pt enabled welcome false
+/pt enabled welcome true[/code]
+
+Commands report a clear error when the renderer already has the requested setting or state. Asking to disable an already disabled display does not announce another successful change or rewrite its saved record.
+
+[spoiler=Command and permission reference]
+Run [b]/pt help[/b] for paginated, permission-aware command help. [b]/particletext[/b] is an alias of [b]/pt[/b]. Renderer IDs use lowercase letters, digits, underscores and hyphens, with a maximum of 32 characters.
+
+Permissions follow [b]particletext.command.<action>[/b]. Editing settings use [b]particletext.command.edit[/b], both teleport actions use [b]particletext.command.teleport[/b], and [b]particletext.admin[/b] grants the administrative commands. Operators receive administrative access by default. Version is available to everyone by default.
+
+[url=https://docs.despical.dev/particle-text/commands/admin/][b]Read the command guide[/b][/url]
+[/spoiler]
+
+[hr]
+
+[center][size=4][color=#7286df][b]04  /  KEEP THE TEXT CURRENT[/b][/color][/size]
+[size=6][b]A display that follows your server.[/b][/size][/center]
+
+Install [b]PlaceholderAPI[/b] to resolve supported placeholders inside renderer text. Particle Text periodically refreshes the resolved content, rebuilding its cached points only when the text changes. Text is shared across viewers and uses a global placeholder context.
+
+The built-in Particle Text expansion also makes renderer information available to other PlaceholderAPI-compatible plugins. It registers automatically when PlaceholderAPI is installed; no eCloud download is needed.
+
+[list]
+[*][b]%particletext_total%[/b]: number of saved renderers.
+[*][b]%particletext_enabled%[/b] and [b]%particletext_disabled%[/b]: counts by current state.
+[*][b]%particletext_nearest_id%[/b]: nearest renderer in the supplied player's world.
+[*][b]%particletext_renderer:welcome:text%[/b]: saved text for the renderer named welcome.
+[*][b]%particletext_renderer:welcome:enabled%[/b]: that renderer's enabled state.
+[/list]
+
+[url=https://docs.despical.dev/particle-text/placeholders/general/][b]Explore the placeholder reference[/b][/url]
+
+[hr]
+
+[center][size=4][color=#7286df][b]05  /  STAY IN CONTROL[/b][/color][/size]
+[size=6][b]The presentation and its budget are yours.[/b][/size][/center]
+
+[b]Tune the workload.[/b] Set the rendering interval, viewing distance, per-renderer point cap and shared particle packet budget. Fair scheduling rotates through renderers and points so a tight budget does not repeatedly skip the same displays.
+
+[b]Keep the settings editable.[/b] Creation defaults, inventory materials, sounds, pagination and movement amounts live in YAML. MiniMessage templates control chat text, hover descriptions, buttons, errors, menu names and lore.
+
+[b]Reload with validation.[/b] Run [b]/pt reload[/b] after changing files. Settings, messages and renderer records are validated before replacing active state. Invalid values reject the reload and keep the running configuration. Renderer edits use atomic file replacement before publishing their runtime state.
+
+Back up [b]renderers.yml[/b] when moving your server. Saved renderer-specific fonts and transforms remain independent from the defaults used for new displays.
+
+[hr]
+
+[center][size=4][color=#7286df][b]06  /  CREATE YOUR FIRST DISPLAY[/b][/color][/size]
+[size=6][b]Start with a welcome. See where it belongs.[/b][/size][/center]
+
+[b]Requirements:[/b] Paper or a compatible fork for Minecraft [b]1.21.11 or later[/b], and [b]Java 25 or newer[/b]. Folia is not supported. PlaceholderAPI is optional. Your Java runtime needs its desktop module for font rasterization.
+
+Download [b]particle-text-2.0.2.jar[/b], place it in your server's [b]plugins[/b] folder and restart. Default configuration and an empty renderer file are installed automatically.
+
+[code]/pt create welcome Welcome to the server
+/pt move welcome up 1
+/pt info welcome[/code]
+
+[hr]
+
+[center][size=4][color=#7286df][b]07  /  BSTATS METRICS[/b][/color][/size]
+[size=6][b]bStats Metrics[/b][/size][/center]
+
+Particle Text uses [b]bStats[/b] for anonymous aggregate usage statistics. Server owners can control bStats through its own configuration.
+
+[center][url=https://bstats.org/plugin/bukkit/ParticleText/18978][b]View Particle Text metrics[/b][/url]
+
+[size=5][b]Make your next welcome part of the world.[/b][/size]
+Free and open source under GPL v3. Created by [b]Despical[/b].
+
+[url=https://docs.despical.dev/particle-text/getting-started/][b]Installation guide[/b][/url]  ·  [url=https://github.com/Despical/ParticleText][b]Source code[/b][/url]  ·  [url=https://discord.gg/uXVU8jmtpU][b]Discord support[/b][/url][/center]
+[/size][/font]

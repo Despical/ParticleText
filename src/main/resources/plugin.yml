@@ -1,20 +1,13 @@
 name: ParticleText
 version: ${version}
-description: Render customizable text with Minecraft particles.
+description: Render persistent text with configurable Minecraft particles.
 author: Despical
 website: https://github.com/Despical/ParticleText
 prefix: ParticleText
-api-version: '26.2'
+api-version: '1.21.11'
 main: dev.despical.particletext.ParticleTextPlugin
 
-softdepend:
-  - PlaceholderAPI
-  - Multiverse-Core
-  - SlimeWorldManager
-  - SlimeWorldPlugin
-  - MultiWorld
-  - My_Worlds
-  - WorldGuard
+softdepend: [PlaceholderAPI]
 
 permissions:
   particletext.*:
@@ -28,6 +21,7 @@ permissions:
     default: op
     children:
       particletext.command.create: true
+      particletext.command.info: true
       particletext.command.delete: true
       particletext.command.edit: true
       particletext.command.list: true
@@ -76,4 +70,8 @@ permissions:
 
   particletext.command.tabcomplete:
     description: Allows receiving standard tab completions for ParticleText commands.
+    default: op
+
+  particletext.command.info:
+    description: Allows viewing renderer details and management actions.
     default: op

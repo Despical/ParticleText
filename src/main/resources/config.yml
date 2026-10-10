@@ -1,13 +1,20 @@
-# ============================================================================
-#                                                                            #
-#                         Particle Text Configuration                        #
-#                                by Despical                                 #
-#                                                                            #
-# ============================================================================
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
+#                                                                             #
+#                                Particle Text                                #
+#                                 by Despical                                 #
+#                                                                             #
+#                   https://github.com/Despical/ParticleText                  #
+#        https://docs.despical.dev/particle-text/configuration/config/        #
+#                                                                             #
+# # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
 
 # Controls how often particle text is rendered and how much work each renderer may perform.
 # Lower limits generally improve server performance at the cost of visual quality or range.
 performance:
+
+  # Shared particle packet budget per server tick. Range: 1..1000000.
+  # Renderers take turns when the budget is exhausted.
+  max-particles-per-tick: 15000
 
   # Sets the number of server ticks between particle render passes.
   # Lower values make animations appear smoother but increase particle and CPU usage.
@@ -20,7 +27,7 @@ performance:
   # Players outside this radius are skipped before any particles are sent to them.
   view-distance: 32.0
 
-  # Samples every nth pixel from the rasterized text image.
+  # Samples every nth pixel from the rasterized text.
   # Larger values reduce particle count and detail, while 1 preserves every eligible pixel.
   pixel-step: 1
 
@@ -80,19 +87,23 @@ defaults:
 # Changes are cached and become visible after running /pt reload and reopening the menu.
 menu:
 
+  # Volume (0..2) and pitch (0.5..2) shared by menu sounds.
+  sound-volume: 1.0
+  sound-pitch: 1.0
+
   # Sets the MiniMessage title displayed at the top of the renderer menu.
-  # This matches the configured chat prefix for consistent branding.
+  # Chat output uses the separate prefix setting in messages.yml.
   title: '<gradient:#00E5FF:#7C4DFF><bold>Particle Text</bold></gradient> <#37474F>»'
 
   # Sets the menu height in inventory rows; accepted values are 3 through 6.
   rows: 6
 
   # Sets the Bukkit material used for enabled renderer entries.
-  # Invalid or air materials fall back to LIME_DYE.
+  # Invalid or air materials reject the reload.
   enabled-material: LIME_DYE
 
   # Sets the Bukkit material used for disabled renderer entries.
-  # Invalid or air materials fall back to GRAY_DYE.
+  # Invalid or air materials reject the reload.
   disabled-material: GRAY_DYE
 
   # Sets the Bukkit material used by the previous-page button.
@@ -102,18 +113,18 @@ menu:
   next-page-material: ARROW
 
   # Sets the Bukkit material shown when no renderers exist.
-  # Invalid or air materials fall back to BARRIER.
+  # Invalid or air materials reject the reload.
   empty-material: BARRIER
 
   # Configures the decorative border surrounding the renderer entries.
   decoration-blocks:
 
     # Sets the Bukkit material used to fill the menu border.
-    # Invalid or air materials fall back to GRAY_STAINED_GLASS_PANE.
+    # Invalid or air materials reject the reload.
     material: GRAY_STAINED_GLASS_PANE
 
   # Configures the Bukkit sounds used for menu interaction feedback.
-  # Use vanilla sound keys; invalid values fall back to the defaults shown below.
+  # Use vanilla sound keys; invalid values reject the reload.
   sounds:
     open: ui.button.click
     page-change: ui.button.click
@@ -124,3 +135,13 @@ menu:
 
 # If enabled, the plugin checks for newer releases on startup.
 updates-enabled: true
+
+
+# Command and chat presentation defaults; individual renderer values stay saved.
+commands:
+  # Distance used by /pt move when its amount is omitted. Range: 0.01..100.
+  default-move-amount: 0.25
+
+chat:
+  # Rows per renderer list page. Range: 1..30.
+  page-size: 8

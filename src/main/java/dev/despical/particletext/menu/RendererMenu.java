@@ -1,3 +1,21 @@
+/*
+ * Particle Text - Persistent particle text for Minecraft.
+ * Copyright (C) 2026  Berke Akçen
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package dev.despical.particletext.menu;
 
 import dev.despical.inventoryframework.Gui;
@@ -9,7 +27,9 @@ import dev.despical.particletext.config.PluginSettings;
 import dev.despical.particletext.message.MessageService;
 import dev.despical.particletext.message.Var;
 import dev.despical.particletext.model.RendererData;
+import dev.despical.particletext.model.RendererLocation;
 import dev.despical.particletext.render.RendererService;
+
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -18,7 +38,21 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 
+/**
+ * Builds a paginated inventory for renderer navigation and visibility.
+ * <p>
+ * Materials, title, sounds, names, and lore come from the published configuration. Inventory Framework
+ * panes keep entries inside a decorative border and provide page navigation.
+ * <p>
+ * Click handlers recheck edit or teleport permissions and refresh the renderer record before using its
+ * location. Reopen the inventory after a presentation reload.
+ *
+ * @author Despical
+ * <p>
+ * Created at 10.10.2026
+ */
 public final class RendererMenu {
 
     private final ParticleTextPlugin plugin;
@@ -77,20 +111,20 @@ public final class RendererMenu {
                     pages.setPage(pages.getPage() - 1);
                     gui.update();
                 }
-            }, settings.pageChangeSound(), 0.8f), 0, 0);
+            }, settings.pageChangeSound()), 0, 0);
             navigation.addItem(navigationItem(player, settings.nextPageMaterial(), "menu.next-page", () -> {
                 if (pages.getPage() + 1 < pages.getPages()) {
                     pages.setPage(pages.getPage() + 1);
                     gui.update();
                 }
-            }, settings.pageChangeSound(), 1.5f), 8, 0);
+            }, settings.pageChangeSound()), 8, 0);
         }
 
         gui.addPane(navigation);
         gui.show(player);
 
         if (playOpenSound) {
-            playSound(player, settings.openSound(), 1.5f);
+            playSound(player, settings.openSound());
         }
     }
 
@@ -106,35 +140,76 @@ public final class RendererMenu {
         return GuiItem.of(item, event -> {
             Player player = (Player) event.getWhoClicked();
 
-            if (event.isRightClick()) {
-                rendererService.toggleEnabled(data.id()).ifPresent(updated -> {
-                    messages.send(player, updated.enabled() ? "renderer-enabled" : "renderer-disabled",
-                        Var.of("%id%", updated.id()));
-                    playSound(player, updated.enabled() ? settings.enabledSound() : settings.disabledSound(),
-                        updated.enabled() ? 1.6f : 0.7f);
-                    plugin.getServer().getScheduler().runTask(plugin, () -> open(player, false));
-                });
+            if (!event.isLeftClick() && !event.isRightClick()) {
                 return;
             }
 
-            Location location = data.location().toBukkitLocation();
+            if (event.isRightClick()) {
+                if (!player.hasPermission("particletext.command.edit")) {
+                    messages.send(player, "no-permission");
+                    return;
+                }
+
+                try {
+                    var updated = rendererService.toggleEnabled(data.id());
+
+                    if (updated.isEmpty()) {
+                        messages.send(player, "renderer-not-found", Var.of("%id%", data.id()));
+                        return;
+                    }
+
+                    messages.send(player, updated.get().enabled() ? "renderer-enabled" : "renderer-disabled",
+                        Var.of("%id%", updated.get().id()));
+                    playSound(player, updated.get().enabled() ? settings.enabledSound() : settings.disabledSound());
+                    plugin.getServer().getScheduler().runTask(plugin, () -> open(player, false));
+                } catch (RuntimeException error) {
+                    plugin.getLogger().log(Level.SEVERE, "Could not toggle renderer " + data.id(), error);
+                    messages.send(player, "operation-failed");
+                }
+
+                return;
+            }
+
+            if (!player.hasPermission("particletext.command.teleport")) {
+                messages.send(player, "no-permission");
+                return;
+            }
+
+            var current = rendererService.find(data.id());
+
+            if (current.isEmpty()) {
+                messages.send(player, "renderer-not-found", Var.of("%id%", data.id()));
+                return;
+            }
+
+            Location location = current.get().location().toBukkitLocation();
 
             if (location == null) {
-                messages.send(player, "world-unavailable", Var.of("%world%", data.location().world()));
-                playSound(player, settings.disabledSound(), 0.7f);
+                messages.send(player, "world-unavailable", Var.of("%world%", current.get().location().world()));
+                playSound(player, settings.disabledSound());
+                return;
+            }
+
+            if (RendererLocation.from(player.getLocation()).equals(current.get().location())) {
+                messages.send(player, "renderer-location-unchanged", Var.of("%id%", data.id()));
                 return;
             }
 
             player.closeInventory();
-            player.teleport(location);
-            playSound(player, settings.teleportSound(), 1f);
+
+            if (!player.teleport(location)) {
+                messages.send(player, "teleport-failed", Var.of("%id%", data.id()));
+                return;
+            }
+
+            playSound(player, settings.teleportSound());
 
             messages.send(player, "renderer-teleported", Var.of("%id%", data.id()));
         });
     }
 
     private GuiItem navigationItem(Player player, org.bukkit.Material material, String messagePath, Runnable action,
-                                   Sound sound, float pitch) {
+                                   Sound sound) {
         ItemStack item = new ItemStack(material);
         ItemMeta meta = item.getItemMeta();
 
@@ -143,7 +218,7 @@ public final class RendererMenu {
         item.setItemMeta(meta);
 
         return GuiItem.of(item, event -> {
-            playSound(player, sound, pitch);
+            playSound(player, sound);
             action.run();
         });
     }
@@ -156,7 +231,7 @@ public final class RendererMenu {
         meta.lore(messages.parseList(player, "menu.empty-lore"));
         item.setItemMeta(meta);
 
-        return GuiItem.of(item, event -> playSound(player, settings.disabledSound(), 0.7f));
+        return GuiItem.of(item, event -> playSound(player, settings.disabledSound()));
     }
 
     private GuiItem decorationItem(Player player, PluginSettings.MenuSettings settings) {
@@ -169,20 +244,21 @@ public final class RendererMenu {
         return GuiItem.of(item);
     }
 
-    private void playSound(Player player, Sound sound, float pitch) {
-        player.playSound(player.getLocation(), sound, 1f, pitch);
+    private void playSound(Player player, Sound sound) {
+        var settings = plugin.getSettingsManager().current().menu();
+        player.playSound(player.getLocation(), sound, settings.soundVolume(), settings.soundPitch());
     }
 
     private Var[] variables(RendererData data) {
-        return List.of(
-            Var.of("%id%", data.id()),
-            Var.of("%text%", data.text()),
+        return new Var[] {
+            Var.of("%id%", data.id()), Var.of("%text%", data.text()),
             Var.of("%particle%", data.particle().name()),
             Var.of("%scale%", String.format(Locale.US, "%.2f", data.scale())),
             Var.of("%inverted%", data.inverted()),
-            Var.of("%font%", data.font().name()),
+            Var.of("%font%", data.font().name()), Var.of("%font_style%", data.font().style().name()),
             Var.of("%font_size%", data.font().size()),
-            Var.of("%status%", messages.raw(data.enabled() ? "menu.status-enabled" : "menu.status-disabled")))
-        .toArray(Var[]::new);
+            Var.of("%status%", messages.parse(messages.raw(data.enabled()
+                ? "menu.status-enabled" : "menu.status-disabled")))
+        };
     }
 }

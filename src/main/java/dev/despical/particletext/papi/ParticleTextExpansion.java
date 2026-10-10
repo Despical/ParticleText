@@ -1,9 +1,28 @@
+/*
+ * Particle Text - Persistent particle text for Minecraft.
+ * Copyright (C) 2026  Berke Akçen
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package dev.despical.particletext.papi;
 
 import dev.despical.particletext.ParticleTextPlugin;
 import dev.despical.particletext.model.RendererData;
 import lombok.RequiredArgsConstructor;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +32,19 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
+/**
+ * Exposes saved renderer counts and values to PlaceholderAPI.
+ * <p>
+ * Count and ID lookups read immutable renderer snapshots. Nearest-renderer placeholders use the requesting
+ * player world and location; requests without a player have no nearest result.
+ * <p>
+ * The expansion persists across PlaceholderAPI reloads and is explicitly unregistered when Particle Text
+ * disables. Unknown field requests do not mutate renderer state.
+ *
+ * @author Despical
+ * <p>
+ * Created at 10.10.2026
+ */
 @RequiredArgsConstructor
 public final class ParticleTextExpansion extends PlaceholderExpansion {
 

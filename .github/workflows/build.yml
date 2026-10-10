@@ -31,4 +31,16 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew clean build --no-daemon --console=plain
+
+      - name: Validate documentation
+        run: ./gradlew javadocJar --no-daemon --console=plain
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: particle-text
+          path: |
+            build/libs/particle-text-*.jar
+            build/reports/tests/test/
+          if-no-files-found: error

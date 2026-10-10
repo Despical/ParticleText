@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'com.gradleup.shadow' version '9.6.1'
 }
 
@@ -13,14 +13,11 @@ java {
 }
 
 dependencies {
-    compileOnly 'io.papermc.paper:paper-api:26.2.build.130-stable'
+    compileOnly 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.12.3'
     compileOnly 'org.projectlombok:lombok:1.18.48'
 
-    implementation('dev.despical:commons:2.1.2') {
-        exclude group: 'org.slf4j'
-    }
-    implementation 'dev.despical:command-framework:1.6.5'
+    implementation 'co.aikar:acf-bukkit:0.5.1-SNAPSHOT'
     implementation 'dev.despical:inventory-framework:2.4.7'
     implementation 'org.bstats:bstats-bukkit:3.2.1'
 
@@ -28,6 +25,13 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.14.4'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.14.4'
+    testImplementation 'io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 25
+    options.compilerArgs += ['-Xlint:deprecation', '-Xlint:unchecked']
 }
 
 tasks.processResources {
@@ -45,18 +49,37 @@ tasks.test {
 }
 
 tasks.jar {
-    enabled = false
+    archiveClassifier = 'plain'
+    manifest.attributes('paperweight-mappings-namespace': 'mojang')
 }
 
 tasks.shadowJar {
-    minimize()
+    archiveClassifier = ''
 
-    relocate 'dev.despical.commons', 'dev.despical.particletext.lib.commons'
-    relocate 'dev.despical.commandframework', 'dev.despical.particletext.lib.commandframework'
+    manifest.attributes('paperweight-mappings-namespace': 'mojang')
+    relocate 'co.aikar.commands', 'dev.despical.particletext.lib.acf'
+    relocate 'co.aikar.locales', 'dev.despical.particletext.lib.locales'
     relocate 'dev.despical.inventoryframework', 'dev.despical.particletext.lib.inventoryframework'
     relocate 'org.bstats', 'dev.despical.particletext.lib.bstats'
 
-    exclude 'META-INF/**'
-
     archiveFileName = "particle-text-${version}.jar"
+}
+
+tasks.build { dependsOn tasks.shadowJar }
+
+tasks.javadoc {
+    options.encoding = 'UTF-8'
+    options.locale = 'en_US'
+    options.addStringOption('Xdoclint:all,-missing', '-quiet')
+    options.addBooleanOption('Werror', true)
+}
+
+tasks.register('javadocJar', Jar) {
+    dependsOn tasks.javadoc
+    archiveClassifier = 'javadoc'
+    from(tasks.javadoc.destinationDir)
+}
+
+tasks.withType(Jar).configureEach {
+    from('LICENSE') { into 'META-INF' }
 }

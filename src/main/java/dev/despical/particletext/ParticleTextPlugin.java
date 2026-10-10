@@ -1,118 +1,140 @@
+/*
+ * Particle Text - Persistent particle text for Minecraft.
+ * Copyright (C) 2026  Berke Akçen
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package dev.despical.particletext;
 
-import dev.despical.commandframework.CommandErrorMessage;
-import dev.despical.commandframework.CommandFramework;
-import dev.despical.particletext.command.Arguments;
+import dev.despical.particletext.command.BrigadierCommands;
 import dev.despical.particletext.config.SettingsManager;
 import dev.despical.particletext.message.MessageService;
-import dev.despical.particletext.message.Var;
+import dev.despical.particletext.message.RendererPanels;
 import dev.despical.particletext.papi.ParticleTextExpansion;
 import dev.despical.particletext.papi.PlaceholderApiTextResolver;
-import dev.despical.particletext.papi.PlainTextResolver;
 import dev.despical.particletext.papi.TextResolver;
 import dev.despical.particletext.persistence.RendererRepository;
 import dev.despical.particletext.render.RendererService;
 import dev.despical.particletext.service.UpdateChecker;
 import lombok.Getter;
+
 import org.bstats.bukkit.Metrics;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.logging.Level;
-import java.util.stream.Stream;
 
+/**
+ * Coordinates the Particle Text plugin lifecycle.
+ * <p>
+ * Startup installs resources, validates settings, loads renderer records, and registers
+ * commands and integrations. Failures disable the plugin before partially initialized services become available.
+ * <p>
+ * Reload stages settings, message templates, and renderer records before publishing
+ * replacements. Shutdown stops rendering and unregisters command and PlaceholderAPI integrations.
+ *
+ * @author Despical
+ * <p>
+ * Created at 10.10.2026
+ */
 @Getter
 public final class ParticleTextPlugin extends JavaPlugin {
-
-    private static ParticleTextPlugin instance;
 
     private SettingsManager settingsManager;
     private MessageService messages;
     private RendererService rendererService;
-    private CommandFramework commandFramework;
+    private RendererRepository repository;
+    private BrigadierCommands commands;
+    private RendererPanels panels;
+    private Metrics metrics;
+    private ParticleTextExpansion expansion;
 
     @Override
     public void onEnable() {
-        instance = this;
-        settingsManager = new SettingsManager(this);
+        try {
+            settingsManager = new SettingsManager(this);
+            TextResolver resolver = getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")
+                ? new PlaceholderApiTextResolver() : TextResolver.passthrough();
+            messages = new MessageService(this, resolver);
+            repository = new RendererRepository(this);
+            rendererService = new RendererService(this, settingsManager, repository, resolver);
+            panels = new RendererPanels(this);
+            commands = new BrigadierCommands(this);
 
-        TextResolver textResolver = createTextResolver();
-        messages = new MessageService(this, textResolver);
+            registerPlaceholderExpansion();
 
-        RendererRepository repository = new RendererRepository(this);
-        rendererService = new RendererService(this, settingsManager, repository, textResolver);
+            rendererService.start();
 
-        registerCommands();
-        registerPlaceholderExpansion();
+            try {
+                metrics = new Metrics(this, 18978);
+            } catch (Exception error) {
+                getLogger().warning("bStats could not start: " + error.getMessage());
+            }
 
-        rendererService.start();
+            if (settingsManager.current().updatesEnabled()) {
+                new UpdateChecker(this).check();
+            }
 
-        new Metrics(this, 18978);
-
-        if (settingsManager.current().updatesEnabled()) {
-            new UpdateChecker(this).check();
+            getLogger().info("ParticleText enabled: " + rendererService.all().size() + " saved renderers.");
+        } catch (Exception error) {
+            getLogger().log(Level.SEVERE, "Cannot enable ParticleText", error);
+            getServer().getPluginManager().disablePlugin(this);
         }
-
-        int rendererAmount = rendererService.all().size();
-        getLogger().log(Level.INFO, "ParticleText v{0} initialized with {1} renderer{2}.",
-            new Object[] { getPluginMeta().getVersion(), rendererAmount, rendererAmount > 1 ? "s" : ""});
-    }
-
-    @Override
-    public void onDisable() {
-        if (rendererService != null) {
-            rendererService.stop();
-        }
-
-        instance = null;
     }
 
     public void reloadPlugin() {
-        settingsManager.reload();
-        messages.reload();
-        rendererService.reload();
-    }
+        var settings = settingsManager.load();
+        var templates = messages.load();
+        var records = repository.loadSnapshot(settings);
+        var prepared = rendererService.prepareAll(records.renderers(), settings);
 
-    private TextResolver createTextResolver() {
-        if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            return new PlaceholderApiTextResolver();
-        }
-
-        return new PlainTextResolver();
-    }
-
-    private void registerCommands() {
-        commandFramework = new CommandFramework(this);
-        commandFramework.setDefaultArguments(Arguments::new);
-        commandFramework.registerAllInPackage("dev.despical.particletext.command");
-
-        Stream.of(CommandErrorMessage.SHORT_ARG_SIZE, CommandErrorMessage.LONG_ARG_SIZE).forEach(error ->
-            error.setHandler((command, arguments) -> {
-                messages.send(arguments.getSender(), "correct-usage",
-                    Var.of("%usage%", command.usage().replace("%label%", arguments.getLabel())));
-                return true;
-            }));
-
-        CommandErrorMessage.ONLY_BY_PLAYERS.setHandler((_, arguments) -> {
-            messages.send(arguments.getSender(), "player-only");
-            return true;
-        });
+        rendererService.stop();
+        settingsManager.apply(settings);
+        messages.apply(templates);
+        repository.apply(records);
+        rendererService.applyAll(prepared);
+        rendererService.start();
     }
 
     private void registerPlaceholderExpansion() {
         if (getServer().getPluginManager().isPluginEnabled("PlaceholderAPI")) {
-            new ParticleTextExpansion(this).register();
+            expansion = new ParticleTextExpansion(this);
+            expansion.register();
 
             getLogger().info("PlaceholderAPI integration enabled.");
         }
     }
 
-    @NotNull
-    public static ParticleTextPlugin getInstance() {
-        if (instance == null) {
-            throw new IllegalStateException("ParticleText is not enabled");
+    @Override
+    public void onDisable() {
+
+        if (rendererService != null) {
+            rendererService.stop();
         }
 
-        return instance;
+        if (commands != null) {
+            commands.close();
+        }
+
+        if (expansion != null) {
+            expansion.unregister();
+        }
+
+        if (metrics != null) {
+            metrics.shutdown();
+        }
+
     }
+
 }

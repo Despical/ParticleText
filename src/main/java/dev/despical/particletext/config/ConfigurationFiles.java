@@ -47,7 +47,6 @@ public final class ConfigurationFiles {
 
     public static YamlConfiguration read(ParticleTextPlugin plugin, String name) {
         var path = plugin.getDataFolder().toPath().resolve(name);
-
         if (!Files.exists(path)) {
             plugin.saveResource(name, false);
         }
@@ -66,7 +65,6 @@ public final class ConfigurationFiles {
             for (String key : yaml.getKeys(true)) {
                 Object expected = defaults.get(key);
                 Object actual = yaml.get(key);
-
                 if ((defaults.isConfigurationSection(key) && !yaml.isConfigurationSection(key))
                     || (expected instanceof Boolean && !(actual instanceof Boolean))
                     || (expected instanceof Number && !(actual instanceof Number))

@@ -47,7 +47,6 @@ public record RendererLocation(String world, double x, double y, double z, float
 
     public static RendererLocation from(Location location) {
         World world = location.getWorld();
-
         if (world == null) {
             throw new IllegalArgumentException("Renderer location must have a world");
         }

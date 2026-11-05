@@ -88,13 +88,11 @@ public final class ParticleTextExpansion extends PlaceholderExpansion {
 
     private String rendererValue(String identifier) {
         String[] parts = identifier.split(":", 3);
-
         if (parts.length != 3) {
             return "";
         }
 
         Optional<RendererData> renderer = plugin.getRendererService().find(parts[1].toLowerCase(Locale.ENGLISH));
-
         if (renderer.isEmpty()) {
             return "";
         }
@@ -118,13 +116,11 @@ public final class ParticleTextExpansion extends PlaceholderExpansion {
 
     private String nearestDistance(Player player) {
         Optional<RendererData> nearest = nearest(player);
-
         if (nearest.isEmpty()) {
             return "";
         }
 
         Location location = nearest.get().location().toBukkitLocation();
-
         if (location == null) {
             return "";
         }

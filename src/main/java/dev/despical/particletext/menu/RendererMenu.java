@@ -92,7 +92,6 @@ public final class RendererMenu {
         List<GuiItem> items = rendererService.all().stream()
             .map(data -> rendererItem(player, data, settings))
             .toList();
-
         if (items.isEmpty()) {
             StaticPane empty = new StaticPane(1, 1, 7, settings.rows() - 2);
             empty.addItem(emptyItem(player, settings), 3, (settings.rows() - 3) / 2);
@@ -104,7 +103,6 @@ public final class RendererMenu {
         }
 
         StaticPane navigation = new StaticPane(0, settings.rows() - 1, 9, 1);
-
         if (pages.getPages() > 1) {
             navigation.addItem(navigationItem(player, settings.previousPageMaterial(), "menu.previous-page", () -> {
                 if (pages.getPage() > 0) {
@@ -139,7 +137,6 @@ public final class RendererMenu {
 
         return GuiItem.of(item, event -> {
             Player player = (Player) event.getWhoClicked();
-
             if (!event.isLeftClick() && !event.isRightClick()) {
                 return;
             }
@@ -152,7 +149,6 @@ public final class RendererMenu {
 
                 try {
                     var updated = rendererService.toggleEnabled(data.id());
-
                     if (updated.isEmpty()) {
                         messages.send(player, "renderer-not-found", Var.of("%id%", data.id()));
                         return;
@@ -176,14 +172,12 @@ public final class RendererMenu {
             }
 
             var current = rendererService.find(data.id());
-
             if (current.isEmpty()) {
                 messages.send(player, "renderer-not-found", Var.of("%id%", data.id()));
                 return;
             }
 
             Location location = current.get().location().toBukkitLocation();
-
             if (location == null) {
                 messages.send(player, "world-unavailable", Var.of("%world%", current.get().location().world()));
                 playSound(player, settings.disabledSound());

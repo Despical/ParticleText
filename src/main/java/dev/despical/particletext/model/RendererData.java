@@ -20,6 +20,8 @@ package dev.despical.particletext.model;
 
 import org.bukkit.Particle;
 
+import java.util.regex.Pattern;
+
 /**
  * Stores immutable persistent content and presentation for one renderer.
  * <p>
@@ -35,12 +37,24 @@ import org.bukkit.Particle;
 public record RendererData(String id, String text, Particle particle, double scale, boolean inverted,
     boolean enabled, FontSpec font, Rotation rotation, RendererLocation location) {
 
+    private static final Pattern VALID_ID = Pattern.compile("[a-z0-9_-]{1,32}");
+
     public RendererData {
-        if (id == null || !id.matches("[a-z0-9_-]{1,32}") || text == null || particle == null
+        if (!isValidId(id) || text == null || particle == null
             || !Double.isFinite(scale) || scale < 0.01 || scale > 10 || font == null || rotation == null
             || location == null) {
             throw new IllegalArgumentException("Invalid renderer data: " + id);
         }
+    }
+
+    /**
+     * Checks the identifier shared by commands and persisted renderer records.
+     *
+     * @param id identifier to check
+     * @return whether it contains 1 to 32 lowercase letters, digits, underscores, or hyphens
+     */
+    public static boolean isValidId(String id) {
+        return id != null && VALID_ID.matcher(id).matches();
     }
 
     public RendererData withText(String value) {

@@ -20,33 +20,24 @@ package dev.despical.particletext.command;
 
 import co.aikar.commands.BukkitCommandManager;
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.arguments.BoolArgumentType;
-import com.mojang.brigadier.arguments.DoubleArgumentType;
-import com.mojang.brigadier.arguments.IntegerArgumentType;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
-import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 
 import dev.despical.particletext.ParticleTextPlugin;
-import dev.despical.particletext.model.FontStyle;
-import dev.despical.particletext.model.ParticleSupport;
 import dev.despical.particletext.model.RendererData;
 
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 
+import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Locale;
 import java.util.Objects;
-import java.util.function.Supplier;
 
 /**
  * Publishes native Paper command trees backed by Aikar execution.
@@ -83,67 +74,10 @@ public final class BrigadierCommands implements AutoCloseable {
     }
 
     public LiteralArgumentBuilder<CommandSourceStack> tree() {
-        var root = Commands.literal("pt").executes(this::run);
-
-        for (var definition : CommandDefinition.values()) {
-            var action = Commands.literal(definition.action())
-                .requires(source -> source.getSender().hasPermission(definition.permission())).executes(this::run);
-
-            switch (definition) {
-                case CREATE -> action.then(word("id").then(greedy("text")));
-                case DELETE, TELEPORT, TPHERE, INFO -> action.then(names());
-                case TEXT -> action.then(names().then(greedy("text")));
-                case SETSIZE -> action.then(names().then(number("scale", 0.01, 10)));
-                case FONT -> action.then(names().then(Commands.argument("font", StringArgumentType.string())
-                    .executes(this::run).then(choices("style",
-                        () -> Arrays.stream(FontStyle.values()).map(Enum::name).toList())
-                        .then(Commands.argument("size", IntegerArgumentType.integer(4, 128)).executes(this::run)))));
-                case PARTICLE -> action.then(names().then(choices("particle", ParticleSupport::names)));
-                case ENABLED, INVERTED -> action.then(names().then(Commands.argument("enabled", BoolArgumentType.bool())
-                    .executes(this::run)));
-                case ROTATE -> action.then(names().then(choices("axis", () -> List.of("x", "y", "z"))
-                    .then(Commands.argument("angle", DoubleArgumentType.doubleArg()).executes(this::run))));
-                case MOVE -> action.then(names().then(choices("direction", () -> Arrays.stream(MoveDirection.values())
-                    .map(MoveDirection::displayName).toList()).then(number("amount", 0.01, 100))));
-                case LIST, HELP -> action.then(Commands.argument("page", IntegerArgumentType.integer(1))
-                    .executes(this::run));
-                default -> {
-                }
-            }
-
-            root.then(action);
-        }
-
-        root.then(Commands.argument("unknown", StringArgumentType.greedyString()).executes(this::run));
-        return root;
-    }
-
-    private RequiredArgumentBuilder<CommandSourceStack, String> names() {
-        return choices("id", () -> plugin.getRendererService().all().stream().map(RendererData::id).toList());
-    }
-
-    private RequiredArgumentBuilder<CommandSourceStack, String> word(String name) {
-        return Commands.argument(name, StringArgumentType.word()).executes(this::run);
-    }
-
-    private RequiredArgumentBuilder<CommandSourceStack, String> greedy(String name) {
-        return Commands.argument(name, StringArgumentType.greedyString()).executes(this::run);
-    }
-
-    private RequiredArgumentBuilder<CommandSourceStack, Double> number(String name, double min, double max) {
-        return Commands.argument(name, DoubleArgumentType.doubleArg(min, max)).executes(this::run);
-    }
-
-    private RequiredArgumentBuilder<CommandSourceStack, String> choices(String name, Supplier<List<String>> values) {
-        return word(name).suggests((context, builder) -> {
-            if (context.getSource().getSender().hasPermission("particletext.command.tabcomplete")) {
-                String remaining = builder.getRemainingLowerCase();
-                values.get().stream().filter(value -> value.toLowerCase(Locale.ROOT).startsWith(remaining))
-                    .forEach(builder::suggest);
-            }
-
-            return builder.buildFuture();
-        });
+        return new ParticleTextCommandTree(this::run,
+            () -> plugin.getRendererService().all().stream().map(RendererData::id).toList(),
+            () -> Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()))
+            .build();
     }
 
     private int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {

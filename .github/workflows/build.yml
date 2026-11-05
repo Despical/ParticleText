@@ -1,6 +1,7 @@
 name: CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [main]
   pull_request:
@@ -8,6 +9,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
@@ -36,11 +41,20 @@ jobs:
       - name: Validate documentation
         run: ./gradlew javadocJar --no-daemon --console=plain
 
-      - name: Upload build artifacts
+      - name: Upload plugin
         uses: actions/upload-artifact@v4
         with:
           name: particle-text
           path: |
             build/libs/particle-text-*.jar
-            build/reports/tests/test/
           if-no-files-found: error
+
+      - name: Upload test reports
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: particle-text-tests
+          path: |
+            build/reports/tests/test/
+            build/test-results/test/*.xml
+          if-no-files-found: ignore

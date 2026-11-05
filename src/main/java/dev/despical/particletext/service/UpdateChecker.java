@@ -63,7 +63,6 @@ public final class UpdateChecker {
             .sendAsync(request, HttpResponse.BodyHandlers.ofString())
             .thenAccept(response -> {
                 String latest = response.body().trim();
-
                 if (response.statusCode() == 200 && isNewer(latest, plugin.getPluginMeta().getVersion())) {
                     plugin.getLogger().info("A newer ParticleText version is available: v" + latest);
                 }
@@ -78,7 +77,6 @@ public final class UpdateChecker {
 
         candidate = candidate.strip();
         current = current.strip();
-
         if (!VERSION.matcher(candidate).matches() || !VERSION.matcher(current).matches()) {
             return false;
         }
@@ -93,7 +91,6 @@ public final class UpdateChecker {
             BigInteger currentPart = index < currentParts.length
                 ? new BigInteger(currentParts[index]) : BigInteger.ZERO;
             int order = candidatePart.compareTo(currentPart);
-
             if (order != 0) {
                 return order > 0;
             }

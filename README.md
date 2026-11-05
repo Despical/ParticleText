@@ -1,3 +1,5 @@
+<img src="assets/particle-text-icon.png" alt="Particle Text icon" width="96" height="96">
+
 # Particle Text
 
 [![CI](https://github.com/Despical/ParticleText/actions/workflows/build.yml/badge.svg)](https://github.com/Despical/ParticleText/actions/workflows/build.yml)
@@ -58,7 +60,10 @@ underscores, and hyphens, with a maximum of 32 characters.
 
 Permissions use `particletext.command.<suffix>`. `particletext.admin` grants all
 administrative commands; `particletext.*` includes it. Completion additionally
-uses `particletext.command.tabcomplete`. Menu teleport and toggle clicks check
+uses `particletext.command.tabcomplete` for argument suggestions, including font
+names and boolean values. Subcommand names follow their own action permissions.
+Font completion inserts quoted names, including names containing spaces.
+Menu teleport and toggle clicks check
 their own action permissions. Version is available to everyone by default.
 
 Directions are `forward`, `backward`, `left`, `right`, `up`, and `down`.
@@ -123,6 +128,15 @@ On Windows use `gradlew.bat`. Build output includes the shaded plugin, a plain
 development JAR, and opt-in Javadocs. Install the shaded plugin JAR.
 The build uses Java 25, Gradle Groovy, Shadow, Aikar ACF, Adventure, and bStats;
 the management menu uses Despical's Inventory Framework.
+
+Command registration and ACF forwarding live in `BrigadierCommands`;
+`ParticleTextCommandTree` owns typed arguments and live suggestions.
+`ParticleTextCommandDispatcher` checks permissions, player-only access, and argument
+counts before handing changes to `RendererCommands`. Renderer persistence and
+particle scheduling remain separate services. Tests cover routing, completion
+permissions, quoted font names, rendering budgets, messages, and saved records.
+
+The project icon is shared with IntelliJ IDEA through `.idea/icon.png`.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and
 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md). Particle Text is licensed under

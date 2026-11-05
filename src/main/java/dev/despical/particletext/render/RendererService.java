@@ -173,13 +173,11 @@ public final class RendererService {
 
     private Optional<RendererData> update(String id, UnaryOperator<RendererData> updater) {
         ParticleTextRenderer renderer = renderers.get(id);
-
         if (renderer == null) {
             return Optional.empty();
         }
 
         RendererData updated = updater.apply(renderer.data());
-
         if (!updated.equals(renderer.data())) {
             put(updated);
         }

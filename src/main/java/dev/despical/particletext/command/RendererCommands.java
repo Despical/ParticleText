@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Predicate;
-import java.util.regex.Pattern;
 
 /**
  * Creates, edits, and moves text renderers through the persistent renderer service.
@@ -48,8 +47,6 @@ import java.util.regex.Pattern;
  */
 final class RendererCommands {
 
-    private static final Pattern VALID_ID = Pattern.compile("[a-z0-9_-]{1,32}");
-
     private final ParticleTextPlugin plugin;
     private final RendererService renderers;
 
@@ -61,8 +58,7 @@ final class RendererCommands {
 
     public void create(CommandSender sender, String[] args) {
         String id = args[0];
-
-        if (!VALID_ID.matcher(id).matches()) {
+        if (!RendererData.isValidId(id)) {
             send(sender, "invalid-id");
             return;
         }
@@ -73,7 +69,6 @@ final class RendererCommands {
         }
 
         String text = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-
         if (!validateTextLength(sender, text)) {
             return;
         }
@@ -87,7 +82,6 @@ final class RendererCommands {
 
     public void delete(CommandSender sender, String[] args) {
         String id = args[0].toLowerCase(Locale.ROOT);
-
         if (!renderers.delete(id)) {
             sendRendererNotFound(sender, id);
             return;
@@ -99,7 +93,6 @@ final class RendererCommands {
     public void text(CommandSender sender, String[] args) {
         String id = args[0].toLowerCase(Locale.ROOT);
         String text = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
-
         if (!validateTextLength(sender, text)) {
             return;
         }
@@ -121,7 +114,6 @@ final class RendererCommands {
         String rawScale = args[1];
 
         double scale = Double.parseDouble(args[1]);
-
         if (!Double.isFinite(scale)) {
             send(sender, "invalid-number", Var.of("%value%", rawScale));
             return;
@@ -133,7 +125,6 @@ final class RendererCommands {
         }
 
         String id = args[0].toLowerCase(Locale.ROOT);
-
         if (unchanged(sender, id, data -> Double.compare(data.scale(), scale) == 0,
             "renderer-size-unchanged")) {
             return;
@@ -150,14 +141,12 @@ final class RendererCommands {
 
     public void font(CommandSender sender, String[] args) {
         Optional<FontStyle> style = FontStyle.find(args[2]);
-
         if (style.isEmpty()) {
             send(sender, "invalid-font");
             return;
         }
 
         int size = Integer.parseInt(args[3]);
-
         if (size < 4 || size > 128) {
             send(sender, "invalid-font");
             return;
@@ -165,7 +154,6 @@ final class RendererCommands {
 
         String id = args[0].toLowerCase(Locale.ROOT);
         FontSpec font = new FontSpec(args[1], style.get(), size);
-
         if (unchanged(sender, id, data -> data.font().equals(font),
             "renderer-font-unchanged")) {
             return;
@@ -183,14 +171,12 @@ final class RendererCommands {
     public void particle(CommandSender sender, String[] args) {
         String requested = args[1];
         var particle = ParticleSupport.find(requested);
-
         if (particle.isEmpty()) {
             send(sender, "invalid-particle", Var.of("%particle%", requested));
             return;
         }
 
         String id = args[0].toLowerCase(Locale.ROOT);
-
         if (unchanged(sender, id, data -> data.particle() == particle.get(),
             "renderer-particle-unchanged")) {
             return;
@@ -207,7 +193,6 @@ final class RendererCommands {
 
     public void enabled(CommandSender sender, String[] args) {
         String rawValue = args[1];
-
         if (!("true".equalsIgnoreCase(rawValue) || "false".equalsIgnoreCase(rawValue))) {
             send(sender, "correct-usage",
                 Var.of("%usage%", plugin.getMessages().raw("usage.enabled").replace("%label%", "pt")));
@@ -216,7 +201,6 @@ final class RendererCommands {
 
         String id = args[0].toLowerCase(Locale.ROOT);
         boolean value = Boolean.parseBoolean(args[1]);
-
         if (unchanged(sender, id, data -> data.enabled() == value,
             value ? "renderer-already-enabled" : "renderer-already-disabled")) {
             return;
@@ -232,7 +216,6 @@ final class RendererCommands {
 
     public void inverted(CommandSender sender, String[] args) {
         String rawValue = args[1];
-
         if (!("true".equalsIgnoreCase(rawValue) || "false".equalsIgnoreCase(rawValue))) {
             send(sender, "correct-usage",
                 Var.of("%usage%", plugin.getMessages().raw("usage.inverted").replace("%label%", "pt")));
@@ -241,7 +224,6 @@ final class RendererCommands {
 
         String id = args[0].toLowerCase(Locale.ROOT);
         boolean value = Boolean.parseBoolean(args[1]);
-
         if (unchanged(sender, id, data -> data.inverted() == value,
             "renderer-inverted-unchanged")) {
             return;
@@ -258,7 +240,6 @@ final class RendererCommands {
     public void teleportHere(CommandSender sender, String[] args) {
         String id = args[0].toLowerCase(Locale.ROOT);
         Player player = (Player) sender;
-
         if (unchanged(sender, id, data -> data.location().equals(RendererLocation.from(player.getLocation())),
             "renderer-location-unchanged")) {
             return;
@@ -274,19 +255,16 @@ final class RendererCommands {
 
     public void move(CommandSender sender, String[] args) {
         Optional<MoveDirection> direction = MoveDirection.find(args[1]);
-
         if (direction.isEmpty()) {
             send(sender, "invalid-direction");
             return;
         }
 
         double amount = plugin.getSettingsManager().current().defaultMoveAmount();
-
         if (args.length == 3) {
             String rawAmount = args[2];
 
             amount = Double.parseDouble(rawAmount);
-
             if (!Double.isFinite(amount)) {
                 send(sender, "invalid-number", Var.of("%value%", rawAmount));
                 return;
@@ -300,14 +278,12 @@ final class RendererCommands {
 
         String id = args[0].toLowerCase(Locale.ROOT);
         Optional<RendererData> renderer = renderers.find(id);
-
         if (renderer.isEmpty()) {
             sendRendererNotFound(sender, id);
             return;
         }
 
         var location = renderer.get().location().toBukkitLocation();
-
         if (location == null) {
             send(sender, "world-unavailable", Var.of("%world%", renderer.get().location().world()));
             return;
@@ -326,7 +302,6 @@ final class RendererCommands {
 
     public void rotate(CommandSender sender, String[] args) {
         String rawAxis = args[1];
-
         if (rawAxis.length() != 1 || "xyz".indexOf(Character.toLowerCase(rawAxis.charAt(0))) < 0) {
             send(sender, "invalid-axis");
             return;
@@ -335,7 +310,6 @@ final class RendererCommands {
         String rawAngle = args[2];
 
         double angle = Double.parseDouble(args[2]);
-
         if (!Double.isFinite(angle)) {
             send(sender, "invalid-number", Var.of("%value%", rawAngle));
             return;
@@ -343,7 +317,6 @@ final class RendererCommands {
 
         String id = args[0].toLowerCase(Locale.ROOT);
         char axis = Character.toLowerCase(rawAxis.charAt(0));
-
         if (unchanged(sender, id, data -> data.rotation().equals(data.rotation().withAxis(axis, angle)),
             "renderer-rotation-unchanged", Var.of("%axis%", axis))) {
             return;
@@ -361,21 +334,18 @@ final class RendererCommands {
     public void teleport(CommandSender sender, String[] args) {
         String id = args[0].toLowerCase(Locale.ROOT);
         Optional<RendererData> data = renderers.find(id);
-
         if (data.isEmpty()) {
             sendRendererNotFound(sender, id);
             return;
         }
 
         Location location = data.get().location().toBukkitLocation();
-
         if (location == null) {
             send(sender, "world-unavailable", Var.of("%world%", data.get().location().world()));
             return;
         }
 
         Player player = (Player) sender;
-
         if (RendererLocation.from(player.getLocation()).equals(data.get().location())) {
             send(sender, "renderer-location-unchanged", Var.of("%id%", id));
             return;
@@ -392,7 +362,6 @@ final class RendererCommands {
     private boolean unchanged(CommandSender sender, String id, Predicate<RendererData> matches, String key,
         Var... variables) {
         var renderer = renderers.find(id);
-
         if (renderer.isEmpty()) {
             sendRendererNotFound(sender, id);
             return true;
@@ -417,6 +386,7 @@ final class RendererCommands {
         if (text.length() <= maxLength) {
             return true;
         }
+
         send(sender, "text-too-long", Var.of("%max%", maxLength));
         return false;
     }

@@ -72,7 +72,6 @@ public final class PointCloudFactory {
         for (int y = 0; y < image.getHeight(); y += step) {
             for (int x = 0; x < image.getWidth(); x += step) {
                 boolean foreground = (image.getRGB(x, y) & 0xFFFFFF) != 0;
-
                 if (foreground == inverted) {
                     continue;
                 }

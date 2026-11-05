@@ -18,6 +18,11 @@
 
 /**
  * Annotated Aikar commands, typed Paper registration, and shared renderer operations.
+ * <p>
+ * BrigadierCommands owns lifecycle registration and forwards invocations to ACF.
+ * ParticleTextCommandTree builds native arguments and current suggestions independently
+ * of plugin startup. The dispatcher checks permissions, sender type, and arity before
+ * RendererCommands changes saved renderer state.
  *
  * @author Despical
  */

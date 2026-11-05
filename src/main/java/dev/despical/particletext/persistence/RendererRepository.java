@@ -41,7 +41,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
 /**
  * Loads and atomically replaces human-readable renderer records.
@@ -61,7 +60,6 @@ import java.util.regex.Pattern;
 public final class RendererRepository {
 
     private static final String ROOT = "renderers";
-    private static final Pattern VALID_ID = Pattern.compile("[a-z0-9_-]{1,32}");
 
     private final ParticleTextPlugin plugin;
     private FileConfiguration configuration;
@@ -76,7 +74,6 @@ public final class RendererRepository {
     public Snapshot loadSnapshot(PluginSettings settings) {
         var configuration = ConfigurationFiles.read(plugin, "renderers.yml");
         ConfigurationSection root = configuration.getConfigurationSection(ROOT);
-
         if (root == null) {
             if (configuration.contains(ROOT)) {
                 throw new IllegalArgumentException("renderers must be a YAML section");
@@ -165,7 +162,7 @@ public final class RendererRepository {
             throw new IllegalArgumentException("Renderer must be a YAML section");
         }
 
-        if (!VALID_ID.matcher(id).matches()) {
+        if (!RendererData.isValidId(id)) {
             throw new IllegalArgumentException("Invalid renderer id");
         }
 
@@ -178,7 +175,6 @@ public final class RendererRepository {
             .orElseThrow(() -> new IllegalArgumentException("Invalid font style"));
 
         int fontSize = section.getInt("font.size", defaults.font().size());
-
         if (fontSize < 4 || fontSize > 128) {
             throw new IllegalArgumentException("Font size must be between 4 and 128");
         }
@@ -214,7 +210,6 @@ public final class RendererRepository {
         for (String path : List.of("scale", "font.size", "rotation.x", "rotation.y", "rotation.z",
             "location.x", "location.y", "location.z", "location.yaw", "location.pitch")) {
             Object value = section.get(path);
-
             if (value != null && (!(value instanceof Number number) || !Double.isFinite(number.doubleValue()))) {
                 throw new IllegalArgumentException("Expected finite renderer number: " + path);
             }

@@ -103,7 +103,6 @@ public final class SettingsManager {
 
     private static int integer(YamlConfiguration yaml, String path, int min, int max) {
         Object value = yaml.get(path);
-
         if (!(value instanceof Number number) || !Double.isFinite(number.doubleValue())
             || number.doubleValue() != number.intValue() || number.intValue() < min || number.intValue() > max
         ) {
@@ -115,7 +114,6 @@ public final class SettingsManager {
 
     private static double decimal(YamlConfiguration yaml, String path, double min, double max) {
         Object value = yaml.get(path);
-
         if (!(value instanceof Number number) || !Double.isFinite(number.doubleValue())
             || number.doubleValue() < min || number.doubleValue() > max
         ) {
@@ -143,7 +141,6 @@ public final class SettingsManager {
 
     private static Material material(YamlConfiguration yaml, String path) {
         Material value = Material.matchMaterial(text(yaml, path));
-
         if (value == null || !value.isItem() || value.isAir()) {
             throw invalid(path);
         }
@@ -154,7 +151,6 @@ public final class SettingsManager {
     private static Sound sound(YamlConfiguration yaml, String path) {
         NamespacedKey key = NamespacedKey.fromString(text(yaml, path).toLowerCase(Locale.ROOT));
         Sound value = key == null ? null : Registry.SOUNDS.get(key);
-
         if (value == null) {
             throw invalid(path);
         }

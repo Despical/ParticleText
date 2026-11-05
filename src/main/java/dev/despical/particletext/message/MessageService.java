@@ -76,7 +76,6 @@ public final class MessageService {
 
         for (String key : yaml.getKeys(true)) {
             Object value = yaml.get(key);
-
             if (yaml.isConfigurationSection(key)) {
                 continue;
             }
@@ -104,7 +103,6 @@ public final class MessageService {
 
     public void send(CommandSender recipient, String path, Var... variables) {
         String configured = raw(path);
-
         if (!configured.isEmpty()) {
             recipient.sendMessage(parse(recipient instanceof Player player ? player : null, configured, variables));
         }

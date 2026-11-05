@@ -60,7 +60,6 @@ public final class RendererPanels {
             .filter(command -> sender.hasPermission(command.permission())).toList();
         int size = plugin.getSettingsManager().current().chatPageSize();
         int pages = Math.max(1, (commands.size() + size - 1) / size);
-
         if (!checkPage(sender, page, pages)) {
             return;
         }
@@ -72,7 +71,6 @@ public final class RendererPanels {
             String usage = plugin.getMessages().raw("usage." + command.action()).replace("%label%", "pt");
             String description = plugin.getMessages().raw("description." + command.action());
             Component link = format(sender, "chat.command", Var.of("%command%", usage));
-
             if (sender instanceof Player) {
                 link = link.clickEvent(ClickEvent.suggestCommand("/pt " + command.action() + " "))
                     .hoverEvent(HoverEvent.showText(format(sender, "chat.command-hover",
@@ -91,7 +89,6 @@ public final class RendererPanels {
         var records = plugin.getRendererService().all();
         int size = plugin.getSettingsManager().current().chatPageSize();
         int pages = Math.max(1, (records.size() + size - 1) / size);
-
         if (!checkPage(sender, page, pages)) {
             return;
         }
@@ -105,7 +102,6 @@ public final class RendererPanels {
 
         for (var data : records.subList((page - 1) * size, Math.min(page * size, records.size()))) {
             Component name = format(sender, "chat.name", Var.of("%id%", data.id()));
-
             if (sender instanceof Player && sender.hasPermission("particletext.command.info")) {
                 name = name.clickEvent(ClickEvent.runCommand("/pt info " + data.id()))
                     .hoverEvent(HoverEvent.showText(format(sender, "chat.renderer-hover", variables(data))));
@@ -121,7 +117,6 @@ public final class RendererPanels {
 
     public void info(CommandSender sender, String id) {
         var record = plugin.getRendererService().find(id);
-
         if (record.isEmpty()) {
             send(sender, "renderer-not-found", Var.of("%id%", id));
             return;
@@ -133,7 +128,6 @@ public final class RendererPanels {
         plugin.getMessages().sendList(sender, "chat.info", variables(data));
 
         Component actions = Component.empty();
-
         if (sender instanceof Player) {
             actions = actions.append(button(sender, "teleport", "particletext.command.teleport",
                 "/pt teleport " + id, false));

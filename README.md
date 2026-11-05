@@ -26,10 +26,10 @@ in game through commands, interactive chat cards, or an inventory menu.
 
 ## Installation
 
-Use **Java 25 or newer** and **Paper 1.21.11 or newer**. Put the shaded
-`particle-text-2.0.2.jar` in the server's `plugins` folder and restart.
-PlaceholderAPI is optional. The Java runtime must include `java.desktop`
-for font rasterization. Folia is not supported.
+Particle Text is compatible with **Paper 1.21.11 and later** and its forks, running
+on **Java 25 or newer**. Put the shaded `particle-text-2.0.2.jar` in the server's
+`plugins` folder and restart. PlaceholderAPI is optional. Font rendering uses the
+`java.desktop` module of your Java runtime. Folia is not supported.
 
 ## Commands
 

@@ -55,7 +55,12 @@ public class ParticleSupport {
         }
 
         try {
-            Particle particle = Particle.valueOf(name.toUpperCase(Locale.ENGLISH));
+            String normalized = name.strip()
+                .replaceFirst("(?i)^minecraft:", "")
+                .replace('-', '_')
+                .replace(' ', '_')
+                .toUpperCase(Locale.ENGLISH);
+            Particle particle = Particle.valueOf(normalized);
 
             return particle.getDataType() == Void.class ? Optional.of(particle) : Optional.empty();
         } catch (IllegalArgumentException _) {

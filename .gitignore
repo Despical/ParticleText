@@ -44,3 +44,6 @@ bin/
 !.env.example
 *.log
 hs_err_pid*
+
+# Marketplace art and designs live in the docs repository
+/assets/

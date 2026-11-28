@@ -1,4 +1,4 @@
-<img src="assets/particle-text-icon.png" alt="Particle Text icon" width="96" height="96">
+<img src="https://docs.despical.dev/images/particle-text/icon.png" alt="Particle Text icon" width="96" height="96">
 
 # Particle Text
 
@@ -7,7 +7,7 @@
 ![Paper](https://img.shields.io/badge/Paper-1.21.11%2B-62b47a)
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
 
-![Particle Text cover](assets/particle-text-cover.png)
+![Particle Text cover](https://docs.despical.dev/images/particle-text/cover.png)
 
 Persistent particle text for Paper, created by **Despical**. Add a welcome sign,
 mark an entrance, or display live server information. Customize each renderer

@@ -46,4 +46,5 @@ Do not change versions, reformat unrelated files, or include generated builds,
 server worlds, credentials, or local IDE state.
 
 The shared project icon is the exception to ignored IDE state: keep `.idea/icon.png`
-and `assets/particle-text-icon.png` identical when changing the icon.
+identical to the published icon in the docs repository
+(`public/images/particle-text/icon.png`) when changing the icon.
